@@ -10,9 +10,14 @@ public sealed class UpdateService : IDisposable
 {
     // Public distribution repository; no account credentials are stored in the application.
     public const string Repository = "asilhanalpay/PDF-Viewer";
-    private readonly HttpClient client = new() { Timeout = TimeSpan.FromMinutes(10) };
+    private readonly HttpClient client;
     private const long MaxInstallerBytes = 600L * 1024 * 1024;
-    public UpdateService() => client.DefaultRequestHeaders.UserAgent.ParseAdd("PDF-Viewer/0.1");
+    public UpdateService(HttpMessageHandler? handler = null)
+    {
+        client = handler is null ? new HttpClient() : new HttpClient(handler);
+        client.Timeout = TimeSpan.FromMinutes(10);
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("PDF-Viewer/0.1");
+    }
     public async Task<AvailableUpdate?> CheckAsync(CancellationToken token)
     {
         using var response = await client.GetAsync($"https://api.github.com/repos/{Repository}/releases/latest", token);
