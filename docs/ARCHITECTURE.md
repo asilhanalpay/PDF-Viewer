@@ -18,7 +18,7 @@ Kaynaklar:
 
 ## İşlem sınırları
 
-Uygulama ağ API'si kullanmaz, telemetri SDK'sı içermez, PDF içi bağlantıları açmaz, gömülü dosya/form/JavaScript işlemez. Yalnızca Windows PDF raster API'si çağrılır. Motorun kendisinde oluşabilecek bir güvenlik açığına karşı uygulama düzeyinde garanti verilmez: motor bu sürümde ayrı bir sandbox sürecinde değildir. Yerel Windows dosya seçicisi kullanıcı tarafından seçilen bulut sağlayıcılarına/UNC yollarına erişebilir; uygulama bu sistem davranışını engellemez.
+Uygulama güncelleme denetimi ve indirmesi için GitHub’a bağlanır; telemetri SDK’sı içermez, PDF içi bağlantıları açmaz, gömülü dosya/form/JavaScript işlemez. Yalnızca Windows PDF raster API'si çağrılır. Motorun kendisinde oluşabilecek bir güvenlik açığına karşı uygulama düzeyinde garanti verilmez: motor bu sürümde ayrı bir sandbox sürecinde değildir. Yerel Windows dosya seçicisi kullanıcı tarafından seçilen bulut sağlayıcılarına/UNC yollarına erişebilir; uygulama bu sistem davranışını engellemez.
 
 200 MB ve 20.000 sayfa sınırı, 2560 piksel raster kenar sınırı ve tek eşzamanlı native render kullanılır. Bunlar açılmış PDF'nin karmaşıklığını veya motorun dahili belleğini kesin sınırlandırmaz. Şifreli belgeler parola istemeden anlaşılır genel hata ile reddedilir. Açma başarısız olduğunda önceki belge korunur. Render hatası ilgili sayfada gösterilir. Render iptalleri ve oturum kapatma aynı kilit altında düzenlenir.
 

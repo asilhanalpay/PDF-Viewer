@@ -1,5 +1,5 @@
 #ifndef AppVersion
-  #define AppVersion "0.1.0"
+  #define AppVersion "0.0.2"
 #endif
 #ifndef AppArch
   #define AppArch "x64"
@@ -11,6 +11,7 @@ AppName=PDF Viewer
 AppVersion={#AppVersion}
 DefaultDirName={localappdata}\Programs\PDF Viewer
 DefaultGroupName=PDF Viewer
+UsePreviousAppDir=yes
 PrivilegesRequired=lowest
 DisableProgramGroupPage=yes
 OutputDir=..\artifacts
@@ -36,3 +37,11 @@ Source: "..\artifacts\PDF-Viewer-win-{#AppArch}\*"; DestDir: "{app}"; Flags: ign
 Name: "{autoprograms}\PDF Viewer"; Filename: "{app}\PdfViewer.exe"
 [Run]
 Filename: "{app}\PdfViewer.exe"; Description: "PDF Viewer uygulamasını başlat"; Flags: nowait postinstall skipifsilent
+
+Filename: "{app}\PdfViewer.exe"; Flags: nowait; Check: IsUpdate
+
+[Code]
+function IsUpdate: Boolean;
+begin
+  Result := ExpandConstant('{param:UPDATE|0}') = '1';
+end;

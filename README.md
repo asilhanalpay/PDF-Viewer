@@ -12,7 +12,9 @@ PDF dosyalarınızı çevrim dışı açın; sayfalar arasında gezinin, yakınl
 
 ### Güncelleme
 
-Uygulamadaki **Güncelle** düğmesiyle yeni sürümleri denetleyin. Onayınızla yeni kurulum indirilir ve başlatılır. Bu işlem internet gerektirir.
+Uygulama açıldığında ve açıkken dört saatte bir yeni sürüm denetlenir. **Yeni sürüm mevcut** bildiriminin ardından onayınızla mevcut kurulum güncellenir ve uygulama yeniden açılır. Ayrı bir uygulama kurulmaz. Güncelleme denetimi internet gerektirir.
+
+**Güncelle** düğmesiyle istediğiniz zaman da denetleyebilirsiniz.
 
 Eski **v0.1.0** kuruluysa yeni kurulumu bir kez elle indirip çalıştırın.
 

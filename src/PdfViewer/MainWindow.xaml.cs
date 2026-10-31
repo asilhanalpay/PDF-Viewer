@@ -19,6 +19,9 @@ public sealed partial class MainWindow : Window
     private readonly HashSet<PdfPageItem> realized = [];
     private ScrollViewer? scroll;
     private bool closed;
+    private bool updateBusy;
+    private readonly CancellationTokenSource lifetime = new();
+    private readonly DispatcherTimer updateTimer = new() { Interval = TimeSpan.FromHours(4) };
     private double pageWidth = 800;
     public MainWindow()
     {
@@ -27,42 +30,79 @@ public sealed partial class MainWindow : Window
         PageList.SizeChanged += Viewport_Changed;
         AppWindow.Resize(new Windows.Graphics.SizeInt32(1150, 850));
         PageList.ItemsSource = ViewModel.Pages;
+        Root.Loaded += OnRootLoaded;
+        updateTimer.Tick += async (_, _) => await CheckForUpdatesAsync();
         Closed += async (_, _) =>
         {
             closed = true;
+            updateTimer.Stop();
+            lifetime.Cancel();
             CancelRendering();
             if (session is not null) await session.DisposeAsync();
         };
     }
+    private async void OnRootLoaded(object sender, RoutedEventArgs e)
+    {
+        Root.Loaded -= OnRootLoaded;
+        updateTimer.Start();
+        await CheckForUpdatesAsync();
+    }
+    private async Task CheckForUpdatesAsync()
+    {
+        if (closed || updateBusy) return;
+        updateBusy = true;
+        UpdateButton.IsEnabled = false;
+        try
+        {
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);
+            timeout.CancelAfter(TimeSpan.FromSeconds(15));
+            using var updates = new UpdateService();
+            var update = await updates.CheckAsync(timeout.Token);
+            if (closed) return;
+            if (update is not null)
+            {
+                UpdateNotice.Message = $"V{update.Version} indirilmeye hazır. Mevcut uygulamanız güncellenecek.";
+                UpdateNotice.IsOpen = true;
+            }
+            else UpdateNotice.IsOpen = false;
+        }
+        catch { /* Offline checks stay quiet; manual checks show errors. */ }
+        finally { updateBusy = false; if (!closed) UpdateButton.IsEnabled = true; }
+    }
     private async void Update_Click(object sender, RoutedEventArgs e)
     {
+        if (updateBusy || closed) return;
+        updateBusy = true;
         UpdateButton.IsEnabled = false;
-        using var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(10));
+        using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);
+        cancellation.CancelAfter(TimeSpan.FromMinutes(10));
         using var updates = new UpdateService();
         try
         {
             UpdateButton.Content = "Denetleniyor…";
             var update = await updates.CheckAsync(cancellation.Token);
+            if (closed) return;
             var dialog = new ContentDialog
             {
                 XamlRoot = Root.XamlRoot,
-                Title = update is null ? "PDF Viewer güncel" : $"Yeni sürüm: {update.Version}",
-                Content = update is null ? "Kullanılabilir yeni sürüm bulunamadı." : "Güncelleme indirilecek ve kurulum başlayacak. Açık belgeler kapanacak.",
-                CloseButtonText = "Kapat",
-                PrimaryButtonText = update is null ? "" : "İndir ve kur"
+                Title = update is null ? "PDF Viewer güncel" : "Yeni sürüm mevcut",
+                Content = update is null ? "Kullanılabilir yeni sürüm bulunamadı." : $"V{update.Version} yüklenecek. PDF Viewer kapanacak, mevcut kurulum güncellenecek ve uygulama yeniden açılacak. Açık belgeler kapanacak.",
+                CloseButtonText = "Daha sonra",
+                PrimaryButtonText = update is null ? "" : "Güncelle"
             };
             if (await dialog.ShowAsync() != ContentDialogResult.Primary || update is null) return;
             UpdateButton.Content = "İndiriliyor…";
             var installer = await updates.DownloadAsync(update, cancellation.Token);
             if (closed) return;
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(installer) { UseShellExecute = true });
+            System.Diagnostics.Process.Start(UpdateInstaller.CreateStartInfo(installer, AppContext.BaseDirectory));
             Close();
         }
+        catch (OperationCanceledException) when (closed) { }
         catch (Exception ex)
         {
             if (!closed) ViewModel.Error = ex is InvalidDataException ? ex.Message : "Güncelleme denetlenemedi veya indirilemedi. İnternet bağlantısını kontrol edip yeniden deneyin.";
         }
-        finally { if (!closed) { UpdateButton.Content = "Güncelle"; UpdateButton.IsEnabled = true; } }
+        finally { updateBusy = false; if (!closed) { UpdateButton.Content = "Güncelle"; UpdateButton.IsEnabled = true; } }
     }
     private async void Open_Click(object sender, RoutedEventArgs e)
     {
