@@ -16,7 +16,7 @@ public sealed class UpdateService : IDisposable
     {
         client = handler is null ? new HttpClient() : new HttpClient(handler);
         client.Timeout = TimeSpan.FromMinutes(10);
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("PDF-Viewer/0.1");
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("PDF-Viewer/0.0.1");
     }
     public async Task<AvailableUpdate?> CheckAsync(CancellationToken token)
     {
@@ -26,9 +26,9 @@ public sealed class UpdateService : IDisposable
         using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(token));
         var release = json.RootElement;
         if (release.GetProperty("draft").GetBoolean() || release.GetProperty("prerelease").GetBoolean()) return null;
-        if (!Version.TryParse(release.GetProperty("tag_name").GetString()?.TrimStart('v'), out var latest))
+        if (!Version.TryParse(release.GetProperty("tag_name").GetString()?.TrimStart('v', 'V'), out var latest))
             throw new InvalidDataException("Sürüm bilgisi okunamadı.");
-        var current = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 1, 0);
+        var current = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 0, 1);
         if (new Version(latest.Major, latest.Minor, Math.Max(0, latest.Build)) <= new Version(current.Major, current.Minor, Math.Max(0, current.Build))) return null;
         var arch = RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? "arm64" : "x64";
         var name = $"PDF-Viewer-Setup-{arch}.exe";

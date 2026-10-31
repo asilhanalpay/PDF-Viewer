@@ -1,3 +1,7 @@
+**V0.0.1** — Yeni sürüm numaralandırmasının başlangıcı. Sonraki sürümler V0.0.2, V0.0.3 şeklinde ilerler.
+
+Eski v0.1.0 sürümünü kurduysanız V0.0.1 kurulumunu bir kez elle çalıştırın. Sonraki sürümler uygulamadaki Güncelle düğmesiyle alınabilir.
+
 Windows 10 ve Windows 11 için PDF Viewer.
 
 - Tek EXE ile kullanıcı hesabına kurulum; ayrıca .NET yüklemek gerekmez.

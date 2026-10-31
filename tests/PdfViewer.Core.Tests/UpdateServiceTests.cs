@@ -10,15 +10,16 @@ public class UpdateServiceTests
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             => Task.FromResult(new HttpResponseMessage(code) { Content = new StringContent(json) });
     }
-    private static string Release(string url, string digest, bool prerelease = false) => JsonSerializer.Serialize(new
+    private static string Release(string url, string digest, bool prerelease = false, string tag = "V99.0.0") => JsonSerializer.Serialize(new
     {
-        tag_name = "v99.0.0", draft = false, prerelease,
+        tag_name = tag, draft = false, prerelease,
         assets = new[] { new { name = "PDF-Viewer-Setup-x64.exe", browser_download_url = url, digest } }
     });
     private const string Url = "https://github.com/asilhanalpay/PDF-Viewer/releases/download/v99.0.0/PDF-Viewer-Setup-x64.exe";
-    [Fact] public async Task RecognizesNewStableRelease()
+    [Theory] [InlineData("V99.0.0")] [InlineData("v99.0.0")]
+    public async Task RecognizesNewStableRelease(string tag)
     {
-        using var service = new UpdateService(new Handler(Release(Url,"sha256:"+new string('a',64))));
+        using var service = new UpdateService(new Handler(Release(Url,"sha256:"+new string('a',64), tag: tag)));
         var result = await service.CheckAsync(default);
         Assert.NotNull(result); Assert.Equal(new Version(99,0,0),result.Version);
     }

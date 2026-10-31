@@ -50,7 +50,7 @@ jobs:
             artifacts/*.exe
             artifacts/*.zip
   release:
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/V')
     needs: build
     runs-on: windows-2022
     permissions:
@@ -62,7 +62,7 @@ jobs:
         run: |
           [xml]$project = Get-Content src/PdfViewer/PdfViewer.csproj
           $version = $project.Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
-          if ($env:GITHUB_REF_NAME -ne "v$version") { throw 'Etiket ve uygulama sürümü eşleşmiyor' }
+          if ($env:GITHUB_REF_NAME -ne "V$version") { throw 'Etiket ve uygulama sürümü eşleşmiyor' }
       - uses: actions/download-artifact@v4
         with:
           pattern: PDF-Viewer-*
@@ -74,5 +74,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $files = Get-ChildItem ./release-files/*.exe | ForEach-Object { $_.FullName }
-          gh release create $env:GITHUB_REF_NAME @files --title "PDF Viewer $env:GITHUB_REF_NAME" --notes-file docs/SURUM-NOTLARI.md --verify-tag
+          gh release create $env:GITHUB_REF_NAME @files --title "PDF Viewer $env:GITHUB_REF_NAME" --notes-file docs/SURUM-NOTLARI.md --verify-tag --latest
           if ($LASTEXITCODE -ne 0) { throw 'Sürüm yayımlanamadı' }
