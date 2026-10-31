@@ -4,7 +4,13 @@ Windows 10 ve Windows 11 için sade bir PDF görüntüleyici.
 
 PDF dosyalarınızı çevrim dışı açın; sayfalar arasında gezinin, yakınlaştırın ve pencereye sığdırın. Sistem, açık ve koyu tema seçenekleriyle belgenize odaklanın.
 
-**Geliştirme aşamasında.** Henüz indirilmeye hazır, doğrulanmış bir uygulama sürümü bulunmuyor.
+### İndir
+
+[Windows için indir (.exe)](https://github.com/asilhanalpay/PDF-Viewer/releases/latest/download/PDF-Viewer-Setup-x64.exe) · [ARM64](https://github.com/asilhanalpay/PDF-Viewer/releases/latest/download/PDF-Viewer-Setup-arm64.exe)
+
+Tek dosyayla kurun. Yeni sürümler için uygulamadaki **Güncelle** düğmesini kullanın.
+
+İlk sürüm geliştirme aşamasındadır. Kurulum dosyası imzasız olduğundan Windows yayımcı uyarısı gösterebilir.
 
 ### Özellikler
 
