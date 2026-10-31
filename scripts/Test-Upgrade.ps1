@@ -11,7 +11,8 @@ $previousVersion = (Get-Item $exe).VersionInfo.FileVersion
 $registryPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{C40E5C56-8DFB-4094-A4B9-A3BBA5BC0ED2}_is1'
 $before = Get-ItemProperty $registryPath
 Set-Content (Join-Path $installDir 'upgrade-marker.txt') 'preserve'
-$setup = Start-Process "$root/artifacts/PDF-Viewer-Setup-x64.exe" -ArgumentList '/SILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/CLOSEAPPLICATIONS', '/UPDATE=1', "/DIR=`"$installDir`"" -Wait -PassThru
+$setup = Start-Process "$root/artifacts/PDF-Viewer-Setup-x64.exe" -ArgumentList '/SILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/CLOSEAPPLICATIONS', '/UPDATE=1', "/DIR=`"$installDir`"" -PassThru
+if (!$setup.WaitForExit(120000)) { throw 'Güncelleme kurulumu zaman aşımına uğradı' }
 if ($setup.ExitCode -ne 0) { throw 'Güncelleme kurulamadı' }
 [xml]$project = Get-Content "$root/src/PdfViewer/PdfViewer.csproj"
 $version = $project.Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
