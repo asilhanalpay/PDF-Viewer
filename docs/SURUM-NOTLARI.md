@@ -1,5 +1,7 @@
 Windows 10 ve Windows 11 için sade PDF görüntüleyici.
 
+V0.0.4: Tek araç çubuğu, daha sade belge alanı ve sayfa boyutu, yakınlaştırma, kaydırma ile yeniden boyutlandırma düzeltmeleri.
+
 ### İndir
 
 **[Windows için son sürümü indir (.exe)](https://github.com/asilhanalpay/PDF-Viewer/releases/latest/download/PDF-Viewer-Setup-x64.exe)**

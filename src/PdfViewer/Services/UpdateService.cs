@@ -16,7 +16,7 @@ public sealed class UpdateService : IDisposable
     {
         client = handler is null ? new HttpClient() : new HttpClient(handler);
         client.Timeout = TimeSpan.FromMinutes(10);
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("PDF-Viewer/0.0.3");
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("PDF-Viewer/0.0.4");
     }
     public async Task<AvailableUpdate?> CheckAutomaticAsync(CancellationToken token)
     {

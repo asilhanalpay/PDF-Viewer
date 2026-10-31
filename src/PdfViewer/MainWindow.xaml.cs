@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using PdfViewer.Models;
+using PdfViewer.Core;
 using PdfViewer.Services;
 using PdfViewer.ViewModels;
 using Windows.Storage.Pickers;
@@ -22,12 +23,13 @@ public sealed partial class MainWindow : Window
     private bool updateBusy;
     private readonly CancellationTokenSource lifetime = new();
     private readonly DispatcherTimer updateTimer = new() { Interval = TimeSpan.FromMinutes(1) };
-    private double pageWidth = 800;
+    private readonly DispatcherTimer resizeTimer = new() { Interval = TimeSpan.FromMilliseconds(120) };
+    private double rasterScale = 1;
     public MainWindow()
     {
         InitializeComponent();
-        ThemePicker.SelectionChanged += Theme_Changed;
-        PageList.SizeChanged += Viewport_Changed;
+        PageList.SizeChanged += (_, _) => QueueResize();
+        resizeTimer.Tick += (_, _) => { resizeTimer.Stop(); ResizePages(); };
         AppWindow.Resize(new Windows.Graphics.SizeInt32(1150, 850));
         PageList.ItemsSource = ViewModel.Pages;
         Root.Loaded += OnRootLoaded;
@@ -36,6 +38,7 @@ public sealed partial class MainWindow : Window
         {
             closed = true;
             updateTimer.Stop();
+            resizeTimer.Stop();
             lifetime.Cancel();
             CancelRendering();
             if (session is not null) await session.DisposeAsync();
@@ -44,6 +47,14 @@ public sealed partial class MainWindow : Window
     private async void OnRootLoaded(object sender, RoutedEventArgs e)
     {
         Root.Loaded -= OnRootLoaded;
+        rasterScale = Root.XamlRoot.RasterizationScale;
+        Root.XamlRoot.Changed += (_, _) =>
+        {
+            var scale = Root.XamlRoot.RasterizationScale;
+            if (Math.Abs(scale - rasterScale) < .001) return;
+            rasterScale = scale;
+            QueueResize();
+        };
         updateTimer.Start();
         await CheckForUpdatesAsync();
     }
@@ -80,7 +91,7 @@ public sealed partial class MainWindow : Window
         using var updates = new UpdateService();
         try
         {
-            UpdateButton.Content = "Denetleniyor…";
+            UpdateButton.Text = "Denetleniyor…";
             var update = await updates.CheckAsync(cancellation.Token);
             if (closed) return;
             var dialog = new ContentDialog
@@ -92,7 +103,7 @@ public sealed partial class MainWindow : Window
                 PrimaryButtonText = update is null ? "" : "Güncelle"
             };
             if (await dialog.ShowAsync() != ContentDialogResult.Primary || update is null) return;
-            UpdateButton.Content = "İndiriliyor…";
+            UpdateButton.Text = "İndiriliyor…";
             var installer = await updates.DownloadAsync(update, cancellation.Token);
             if (closed) return;
             System.Diagnostics.Process.Start(UpdateInstaller.CreateStartInfo(installer, AppContext.BaseDirectory));
@@ -103,7 +114,7 @@ public sealed partial class MainWindow : Window
         {
             if (!closed) ViewModel.Error = ex is InvalidDataException ? ex.Message : "Güncelleme denetlenemedi veya indirilemedi. İnternet bağlantısını kontrol edip yeniden deneyin.";
         }
-        finally { updateBusy = false; if (!closed) { UpdateButton.Content = "Güncelle"; UpdateButton.IsEnabled = true; } }
+        finally { updateBusy = false; if (!closed) { UpdateButton.Text = "Güncelle"; UpdateButton.IsEnabled = true; } }
     }
     private async void Open_Click(object sender, RoutedEventArgs e)
     {
@@ -118,17 +129,23 @@ public sealed partial class MainWindow : Window
             picker.FileTypeFilter.Add(".pdf");
             var file = await picker.PickSingleFileAsync();
             if (file is null || closed) return;
-            opened = await PdfSession.OpenAsync(file);
+            opened = await PdfSession.OpenAsync(file, lifetime.Token);
             if (closed) return;
             CancelRendering();
             realized.Clear();
             var previous = session;
+            PageList.ItemsSource = null;
             session = opened;
             opened = null;
             ViewModel.Fit();
-            ViewModel.SetDocument(file.Name, session.PageCount);
-            PageNumber.Maximum = ViewModel.PageCount;
-            ResizePages();
+            ViewModel.SetDocument(file.Name, session.Pages);
+            PageList.Visibility = Visibility.Visible;
+            DocumentToolbar.Visibility = Visibility.Visible;
+            PageNavigation.Visibility = Visibility.Visible;
+            ResizePages(false);
+            PageList.ItemsSource = ViewModel.Pages;
+            PageList.UpdateLayout();
+            AttachScroll();
             Welcome.Visibility = Visibility.Collapsed;
             Title = "PDF Viewer";
             scroll?.ChangeView(0, 0, null, true);
@@ -148,10 +165,10 @@ public sealed partial class MainWindow : Window
         FileNotFoundException => "Dosya bulunamadı. Yeniden seçin.",
         _ => "PDF açılamadı veya görüntülenemedi. Dosya bozuk, şifreli ya da desteklenmeyen bir biçimde olabilir."
     };
-    private void CancelRendering()
+    private void CancelRendering(bool clearImages = true)
     {
         foreach (var pair in rendering) pair.Value.Cancel();
-        foreach (var page in realized) page.Image = null;
+        foreach (var page in realized) { if (clearImages) page.Image = null; page.IsRendering = false; }
         rendering.Clear();
     }
     private void Page_Changing(ListViewBase sender, ContainerContentChangingEventArgs args)
@@ -162,22 +179,23 @@ public sealed partial class MainWindow : Window
             realized.Remove(page);
             if (rendering.Remove(page, out var pending)) pending.Cancel();
             page.Image = null;
+            page.IsRendering = false;
             return;
         }
         realized.Add(page);
-        page.Resize(pageWidth);
-        StartRender(page);
+        _ = RenderPageAsync(page);
     }
-    private async void StartRender(PdfPageItem page)
+    private async Task RenderPageAsync(PdfPageItem page, bool force = false)
     {
         var source = session;
-        if (source is null || closed || rendering.ContainsKey(page) || page.Image is not null) return;
+        if (source is null || closed || rendering.ContainsKey(page) || (!force && page.Image is not null)) return;
         var pending = new CancellationTokenSource();
         rendering.Add(page, pending);
         page.Error = "";
+        page.IsRendering = page.Image is null;
         try
         {
-            var result = await source.RenderAsync(page.Index, pageWidth, Root.XamlRoot?.RasterizationScale ?? 1, pending.Token);
+            var result = await source.RenderAsync(page.Index, page.Width, rasterScale, pending.Token);
             pending.Token.ThrowIfCancellationRequested();
             using var stream = new InMemoryRandomAccessStream();
             using (var writer = new DataWriter(stream.GetOutputStreamAt(0)))
@@ -190,59 +208,110 @@ public sealed partial class MainWindow : Window
             await bitmap.SetSourceAsync(stream);
             pending.Token.ThrowIfCancellationRequested();
             if (source != session || closed) return;
-            page.SetAspect(result.Aspect);
             page.Image = bitmap;
         }
         catch (OperationCanceledException) { }
         catch (Exception ex)
         {
-            if (!pending.IsCancellationRequested && !closed) page.Error = FriendlyError(ex);
+            if (!pending.IsCancellationRequested && !closed) page.Error = "Bu sayfa görüntülenemedi. Yeniden deneyin veya farklı bir PDF açın.";
         }
         finally
         {
-            if (rendering.TryGetValue(page, out var active) && active == pending) rendering.Remove(page);
+            if (rendering.TryGetValue(page, out var active) && active == pending)
+            { rendering.Remove(page); page.IsRendering = false; }
             pending.Dispose();
         }
     }
-    private void ResizePages()
+    private void QueueResize()
+    {
+        if (!ViewModel.HasDocument || closed) return;
+        resizeTimer.Stop(); resizeTimer.Start();
+    }
+    private void ResizePages(bool preservePosition = true)
+    {
+        if (!ViewModel.HasDocument || closed) return;
+        var anchor = ViewModel.Pages[Math.Max(0, ViewModel.CurrentPage - 1)];
+        var oldContainer = PageList.ContainerFromItem(anchor) as FrameworkElement;
+        var oldHeight = oldContainer?.ActualHeight ?? 0;
+        var oldTop = oldContainer?.TransformToVisual(PageList).TransformPoint(new(0, 0)).Y ?? 0;
+        var visible = realized.ToArray();
+        CancelRendering(false);
+        var viewport = scroll is { ViewportWidth: > 0 } ? scroll.ViewportWidth : PageList.ActualWidth;
+        foreach (var page in ViewModel.Pages)
+            page.Resize(DocumentPolicy.PageWidth(page.Size.Width, viewport, ViewModel.FitWidth, ViewModel.Zoom));
+        PageList.UpdateLayout();
+        if (preservePosition && scroll is not null && oldHeight > 0 && PageList.ContainerFromItem(anchor) is FrameworkElement container)
+        {
+            var top = container.TransformToVisual(PageList).TransformPoint(new(0, 0)).Y;
+            var targetTop = oldTop * container.ActualHeight / oldHeight;
+            scroll.ChangeView(ViewModel.FitWidth ? 0 : null, Math.Max(0, scroll.VerticalOffset + top - targetTop), null, true);
+        }
+        foreach (var page in visible.Where(realized.Contains)) _ = RenderPageAsync(page, true);
+        UpdateZoomLabel();
+    }
+    private void UpdateZoomLabel()
     {
         if (!ViewModel.HasDocument) return;
-        pageWidth = ViewModel.FitWidth ? Math.Max(100, PageList.ActualWidth - 64) : 800 * ViewModel.Zoom;
-        var visible = realized.ToArray();
-        CancelRendering();
-        foreach (var page in ViewModel.Pages) page.Resize(pageWidth);
-        foreach (var page in visible) StartRender(page);
+        var page = ViewModel.Pages[Math.Max(0, ViewModel.CurrentPage - 1)];
+        ZoomLabel.Text = $"{page.Width / page.Size.Width:P0}";
     }
-    private void Viewport_Changed(object sender, SizeChangedEventArgs e) { if (ViewModel.FitWidth) ResizePages(); }
     private void Fit_Click(object sender, RoutedEventArgs e) { ViewModel.Fit(); ResizePages(); }
-    private void ZoomIn_Click(object sender, RoutedEventArgs e) { ViewModel.SetZoom(pageWidth / 800 * 1.2); ResizePages(); }
-    private void ZoomOut_Click(object sender, RoutedEventArgs e) { ViewModel.SetZoom(pageWidth / 800 / 1.2); ResizePages(); }
+    private void ChangeZoom(double factor)
+    {
+        if (!ViewModel.HasDocument) return;
+        var page = ViewModel.Pages[Math.Max(0, ViewModel.CurrentPage - 1)];
+        ViewModel.SetZoom(page.Width / page.Size.Width * factor);
+        ResizePages();
+    }
+    private void ZoomIn_Click(object sender, RoutedEventArgs e) => ChangeZoom(1.2);
+    private void ZoomOut_Click(object sender, RoutedEventArgs e) => ChangeZoom(1 / 1.2);
+    private void Retry_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { DataContext: PdfPageItem page }) _ = RenderPageAsync(page, true);
+    }
+    private void Error_Close(InfoBar sender, object args) => ViewModel.Error = "";
+    private void Open_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    { args.Handled = true; Open_Click(OpenButton, new RoutedEventArgs()); }
     private void Navigate(int number)
     {
         ViewModel.CurrentPage = number;
         if (ViewModel.CurrentPage > 0) PageList.ScrollIntoView(ViewModel.Pages[ViewModel.CurrentPage - 1], ScrollIntoViewAlignment.Leading);
+        PageNumber.Text = ViewModel.CurrentPage.ToString();
+        UpdateZoomLabel();
     }
     private void Previous_Click(object sender, RoutedEventArgs e) => Navigate(ViewModel.CurrentPage - 1);
     private void Next_Click(object sender, RoutedEventArgs e) => Navigate(ViewModel.CurrentPage + 1);
     private void PageNumber_KeyDown(object sender, KeyRoutedEventArgs e)
     {
-        if (e.Key == VirtualKey.Enter && double.IsFinite(PageNumber.Value))
-        { Navigate((int)Math.Clamp(PageNumber.Value, 1, Math.Max(1, ViewModel.PageCount))); e.Handled = true; }
+        if (e.Key != VirtualKey.Enter) return;
+        if (int.TryParse(PageNumber.Text, out var number)) Navigate(number);
+        else PageNumber.Text = ViewModel.CurrentPage.ToString();
+        e.Handled = true;
     }
-    private void Theme_Changed(object sender, SelectionChangedEventArgs e)
+    private void PageNumber_LostFocus(object sender, RoutedEventArgs e) => PageNumber.Text = ViewModel.CurrentPage.ToString();
+    private void Theme_Click(object sender, RoutedEventArgs e)
     {
-        if (Root is not null && sender is ComboBox picker) Root.RequestedTheme = picker.SelectedIndex switch { 1 => ElementTheme.Light, 2 => ElementTheme.Dark, _ => ElementTheme.Default };
+        SystemTheme.IsChecked = sender == SystemTheme;
+        LightTheme.IsChecked = sender == LightTheme;
+        DarkTheme.IsChecked = sender == DarkTheme;
+        Root.RequestedTheme = sender == LightTheme ? ElementTheme.Light : sender == DarkTheme ? ElementTheme.Dark : ElementTheme.Default;
     }
-    private void PageList_Loaded(object sender, RoutedEventArgs e)
+    private void PageList_Loaded(object sender, RoutedEventArgs e) => AttachScroll();
+    private void AttachScroll()
     {
-        scroll = FindScroll(PageList);
-        if (scroll is not null) scroll.ViewChanged += (_, _) =>
+        var found = FindScroll(PageList);
+        if (found is null || found == scroll) return;
+        scroll = found;
+        scroll.ViewChanged += (_, _) =>
         {
             var first = realized.Where(p => PageList.ContainerFromItem(p) is FrameworkElement container &&
-                container.TransformToVisual(PageList).TransformPoint(new(0, container.ActualHeight)).Y > 0)
-                .OrderBy(p => p.Index).FirstOrDefault();
-            if (first is not null) ViewModel.CurrentPage = first.Index + 1;
+            container.ActualHeight > 0 &&
+            container.TransformToVisual(PageList).TransformPoint(new(0, container.ActualHeight)).Y > 0 &&
+            container.TransformToVisual(PageList).TransformPoint(new(0, 0)).Y < PageList.ActualHeight)
+            .OrderBy(p => p.Index).FirstOrDefault();
+            if (first is not null) { ViewModel.CurrentPage = first.Index + 1; UpdateZoomLabel(); }
         };
+        QueueResize();
     }
     private static ScrollViewer? FindScroll(DependencyObject parent)
     {

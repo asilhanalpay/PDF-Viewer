@@ -11,19 +11,34 @@ public sealed class PdfSession : IAsyncDisposable
     private PdfDocument? document;
     private readonly SemaphoreSlim gate = new(1);
     private bool disposed;
-    public uint PageCount => document!.PageCount;
-    private PdfSession(PdfDocument document) => this.document = document;
-    public static async Task<PdfSession> OpenAsync(StorageFile file)
+    public uint PageCount => (uint)Pages.Count;
+    public IReadOnlyList<PdfPageSize> Pages { get; }
+    private PdfSession(PdfDocument document, PdfPageSize[] pages) { this.document = document; Pages = Array.AsReadOnly(pages); }
+    public static async Task<PdfSession> OpenAsync(StorageFile file, CancellationToken token = default)
     {
         if (!file.FileType.Equals(".pdf", StringComparison.OrdinalIgnoreCase))
             throw new InvalidDataException("Lütfen bir PDF dosyası seçin.");
+        token.ThrowIfCancellationRequested();
         var properties = await file.GetBasicPropertiesAsync();
         if (properties.Size == 0 || properties.Size > DocumentPolicy.MaximumFileBytes)
             throw new InvalidDataException("Dosya boş veya 200 MB sınırını aşıyor.");
         var doc = await PdfDocument.LoadFromFileAsync(file);
         if (doc.PageCount == 0 || doc.PageCount > DocumentPolicy.MaximumPages)
         { throw new InvalidDataException("Belge boş veya 20.000 sayfa sınırını aşıyor."); }
-        return new(doc);
+        // Resolve geometry before publishing the document: virtualized heights must not change on first render.
+        var pages = await Task.Run(() =>
+        {
+            var sizes = new PdfPageSize[doc.PageCount];
+            for (uint i = 0; i < doc.PageCount; i++)
+            {
+                token.ThrowIfCancellationRequested();
+                using var page = doc.GetPage(i);
+                sizes[i] = new(page.Size.Width, page.Size.Height);
+                sizes[i].Validate();
+            }
+            return sizes;
+        }, token);
+        return new(doc, pages);
     }
     public async Task<(byte[] Bytes, double Aspect)> RenderAsync(int index, double width, double dpi, CancellationToken token)
     {
@@ -31,18 +46,21 @@ public sealed class PdfSession : IAsyncDisposable
         try
         {
             ObjectDisposedException.ThrowIf(disposed, this);
+            if (index < 0 || index >= Pages.Count) throw new ArgumentOutOfRangeException(nameof(index));
             return await Task.Run(async () =>
             {
                 token.ThrowIfCancellationRequested();
                 using var page = document!.GetPage((uint)index);
                 var size = DocumentPolicy.RasterSize(page.Size.Width, page.Size.Height, width * dpi / page.Size.Width);
                 using var stream = new InMemoryRandomAccessStream();
-                await page.RenderToStreamAsync(stream, new PdfPageRenderOptions { DestinationWidth = size.Width, DestinationHeight = size.Height }).AsTask(token);
+                // Wait for native completion before disposing its page/stream, even if the caller cancels.
+                await page.RenderToStreamAsync(stream, new PdfPageRenderOptions { DestinationWidth = size.Width, DestinationHeight = size.Height }).AsTask();
                 token.ThrowIfCancellationRequested();
                 stream.Seek(0);
                 var bytes = new byte[checked((int)stream.Size)];
                 using var reader = new DataReader(stream);
-                await reader.LoadAsync((uint)bytes.Length).AsTask(token);
+                await reader.LoadAsync((uint)bytes.Length);
+                token.ThrowIfCancellationRequested();
                 reader.ReadBytes(bytes);
                 return (bytes, page.Size.Height / page.Size.Width);
             }, token);

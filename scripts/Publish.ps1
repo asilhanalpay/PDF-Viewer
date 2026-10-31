@@ -5,6 +5,13 @@ $platform = if ($Runtime -eq 'win-arm64') { 'ARM64' } else { 'x64' }
 $output = Join-Path $root "artifacts/PDF-Viewer-$Runtime"
 dotnet test "$root/tests/PdfViewer.Core.Tests" -c Release
 if ($LASTEXITCODE -ne 0) { throw 'Tests failed' }
+if ($Runtime -eq 'win-x64') {
+    python "$root/scripts/generate-fixtures.py"
+    if ($LASTEXITCODE -ne 0) { throw 'PDF test dosyaları üretilemedi' }
+    $env:PDF_VIEWER_FIXTURES = "$root/artifacts/fixtures"
+    dotnet test "$root/tests/PdfViewer.Windows.Tests" -c Release
+    if ($LASTEXITCODE -ne 0) { throw 'Windows PDF görüntüleme testleri başarısız' }
+}
 dotnet list "$root/src/PdfViewer/PdfViewer.csproj" package --vulnerable --include-transitive
 if ($LASTEXITCODE -ne 0) { throw 'Dependency audit failed' }
 # Audit output must also be reviewed: this command does not fail on reported vulnerabilities.

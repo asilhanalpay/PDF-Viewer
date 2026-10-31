@@ -15,3 +15,19 @@ public class DocumentPolicyTests
  public void NavigationStaysWithinDocument(int input,int total,int expected) => Assert.Equal(expected,DocumentPolicy.ClampPage(input,total));
  [Fact] public void NonfiniteZoomDoesNotReachRenderer() => Assert.Equal(1,DocumentPolicy.ClampZoom(double.NaN));
 }
+
+public class PageGeometryTests
+{
+ [Theory] [InlineData(595,900,868)] [InlineData(842,900,868)] [InlineData(595,20,100)]
+ public void FitUsesViewportWithoutChangingAspect(double width,double viewport,double expected)
+ { Assert.Equal(expected,DocumentPolicy.PageWidth(width,viewport,true,1)); }
+ [Theory] [InlineData(595,.5,297.5)] [InlineData(842,2,1684)]
+ public void ZoomUsesNativePageSize(double width,double zoom,double expected)
+ { Assert.Equal(expected,DocumentPolicy.PageWidth(width,900,false,zoom)); }
+ [Theory] [InlineData(0,100)] [InlineData(-1,100)] [InlineData(100,0)]
+ public void InvalidPageGeometryIsRejected(double width,double height)
+ { Assert.Throws<InvalidDataException>(() => new PdfPageSize(width,height).Validate()); }
+ [Theory] [InlineData(double.NaN)] [InlineData(double.PositiveInfinity)]
+ public void InvalidScaleCannotGenerateInvalidRaster(double scale)
+ { var size=DocumentPolicy.RasterSize(595,842,scale); Assert.InRange(size.Width,1u,2560u); }
+}
