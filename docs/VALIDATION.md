@@ -4,7 +4,7 @@
 
 Linux x64, geçici olarak kurulan .NET SDK 10.0.403.
 
-- `dotnet test tests/PdfViewer.Core.Tests`: **8 geçti, 0 başarısız**. Raster çözünürlük sınırları, geçersiz boyutlar, gezinme sınırları ve NaN yakınlaştırma kontrol edildi.
+- `dotnet test tests/PdfViewer.Core.Tests`: **14 geçti, 0 başarısız**. Raster sınırları, gezinme ve geçersiz değerlerin yanı sıra yeni sürüm algılama, güvenilir indirme adresi, SHA-256 zorunluluğu, ön sürüm atlama ve hatalı dosyanın reddi kontrol edildi.
 - `dotnet build src/PdfViewer -p:EnableWindowsTargeting=true -p:Platform=x64`: **başarısız**. Paket restore tamamlandı; WinUI `XamlCompiler.exe` Linux üzerinde `Exec format error` verdi. C# UI derlemesi ve XAML bağlamaları bu denemeyle doğrulanmış değildir.
 - `python scripts/generate-fixtures.py`: 1, 100, 1000 sayfalık karma dikey/yatay PDF'ler, bozuk PDF ve boş PDF üretildi. `pdfinfo` 1000 sayfalık belgenin sayfa sayısını ve yapısını okuyabildi. Bu, Windows motoruyla görüntüleme testi değildir.
 - NuGet güvenlik taraması (`EnableWindowsTargeting=true dotnet list src/PdfViewer/PdfViewer.csproj package --vulnerable --include-transitive`): mevcut kaynaklarda bildirilen savunmasız paket bulunmadı. Bu sonuç Windows PDF motoru için güvenlik garantisi değildir.
@@ -31,3 +31,7 @@ Her senaryoyu Windows 10 (desteklenen güncel build) ve Windows 11 üzerinde x64
 | ZIP'i temiz Windows VM'ye çıkarıp çalıştırma | Geliştirme aracı/.NET kurulumu olmadan başlar |
 
 Task Manager veya Windows Performance Recorder ile ilk sayfa süresi, açma süresi ve working set kaydedilmeli. Aynı dosyada en az 10 ileri/geri kaydırma ve 20 aç/kapat döngüsünden sonra kalıcı artış incelenmeli. Sayısal performans hedefleri henüz ölçülmemiştir. Bozuk/şifreli gerçek belge ve adversarial PDF corpus testleri temel sürüm kabulünden önce gereklidir.
+
+## Windows derleme güncellemesi
+
+İlk Windows derlemesindeki `Grid.IsEnabled` XAML hatası giderildi. GitHub Actions çalıştırması `41196394127` üzerinde x64 ve ARM64 için Windows derlemesi ve Inno Setup EXE üretimi başarıyla tamamlandı. Kurulumlar kod imzasızdır. Bu sonuç kapsamlı PDF kullanıcı testi veya temiz Windows 10/11 cihaz doğrulaması değildir.

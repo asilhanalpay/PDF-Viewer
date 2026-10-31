@@ -6,6 +6,7 @@
 #endif
 [Setup]
 AppId={{C40E5C56-8DFB-4094-A4B9-A3BBA5BC0ED2}
+MinVersion=10.0.19041
 AppName=PDF Viewer
 AppVersion={#AppVersion}
 DefaultDirName={localappdata}\Programs\PDF Viewer
