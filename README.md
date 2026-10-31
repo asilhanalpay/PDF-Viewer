@@ -27,6 +27,8 @@ Eski **v0.1.0** kuruluysa yeni kurulumu bir kez elle indirip çalıştırın.
 - Yakınlaştırma ve genişliğe sığdırma
 - Açık, koyu ve sistem teması
 
+Tema ve elle güncelleme seçenekleri **Diğer (⋯)** menüsündedir. PDF açmak için **Ctrl+O** da kullanabilirsiniz.
+
 ### Belgeler
 
 [Geliştirme ve derleme](docs/GELISTIRME.md) · [Test durumu](docs/VALIDATION.md) · [Teknik yapı](docs/ARCHITECTURE.md)

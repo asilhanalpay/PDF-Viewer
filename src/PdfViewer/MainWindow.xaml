@@ -11,9 +11,10 @@
     <Button Content="−" Click="ZoomOut_Click" AutomationProperties.Name="Uzaklaştır" ToolTipService.ToolTip="Uzaklaştır"/>
     <TextBlock x:Name="ZoomLabel" Width="48" TextAlignment="Center" VerticalAlignment="Center"/>
     <Button Content="+" Click="ZoomIn_Click" AutomationProperties.Name="Yakınlaştır" ToolTipService.ToolTip="Yakınlaştır"/>
-    <Button Content="&#xE9A6;" FontFamily="Segoe Fluent Icons" Click="Fit_Click" AutomationProperties.Name="Genişliğe sığdır" ToolTipService.ToolTip="Genişliğe sığdır"/>
+    <Button Click="Fit_Click" AutomationProperties.Name="Genişliğe sığdır" ToolTipService.ToolTip="Genişliğe sığdır"><FontIcon Glyph="&#xE9A6;"/></Button>
    </StackPanel>
-   <Button Grid.Column="3" Content="&#xE712;" FontFamily="Segoe Fluent Icons" AutomationProperties.Name="Diğer seçenekler" ToolTipService.ToolTip="Diğer">
+   <Button Grid.Column="3" AutomationProperties.Name="Diğer seçenekler" ToolTipService.ToolTip="Diğer">
+    <Button.Content><FontIcon Glyph="&#xE712;"/></Button.Content>
     <Button.Flyout><MenuFlyout>
      <MenuFlyoutSubItem Text="Tema">
       <ToggleMenuFlyoutItem x:Name="SystemTheme" Text="Sistem" IsChecked="True" Click="Theme_Click"/>
@@ -46,11 +47,11 @@
    <ProgressRing IsHitTestVisible="False" IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="48" Height="48"/>
   </Grid>
   <StackPanel x:Name="PageNavigation" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8" Margin="12,8" Visibility="Collapsed">
-   <Button Content="&#xE76B;" FontFamily="Segoe Fluent Icons" Click="Previous_Click" IsEnabled="{x:Bind ViewModel.CanGoPrevious, Mode=OneWay}" AutomationProperties.Name="Önceki sayfa" ToolTipService.ToolTip="Önceki sayfa"/>
+   <Button Click="Previous_Click" IsEnabled="{x:Bind ViewModel.CanGoPrevious, Mode=OneWay}" AutomationProperties.Name="Önceki sayfa" ToolTipService.ToolTip="Önceki sayfa"><FontIcon Glyph="&#xE76B;"/></Button>
    <TextBox x:Name="PageNumber" Width="56" MaxLength="6" TextAlignment="Center" Text="{x:Bind ViewModel.CurrentPage, Mode=OneWay}" KeyDown="PageNumber_KeyDown" LostFocus="PageNumber_LostFocus" AutomationProperties.Name="Sayfa numarası" ToolTipService.ToolTip="Sayfayı yazın ve Enter tuşuna basın" InputScope="Number"/>
    <TextBlock Text="/" VerticalAlignment="Center"/>
    <TextBlock Text="{x:Bind ViewModel.PageCount, Mode=OneWay}" VerticalAlignment="Center"/>
-   <Button Content="&#xE76C;" FontFamily="Segoe Fluent Icons" Click="Next_Click" IsEnabled="{x:Bind ViewModel.CanGoNext, Mode=OneWay}" AutomationProperties.Name="Sonraki sayfa" ToolTipService.ToolTip="Sonraki sayfa"/>
+   <Button Click="Next_Click" IsEnabled="{x:Bind ViewModel.CanGoNext, Mode=OneWay}" AutomationProperties.Name="Sonraki sayfa" ToolTipService.ToolTip="Sonraki sayfa"><FontIcon Glyph="&#xE76C;"/></Button>
   </StackPanel>
   <InfoBar x:Name="UpdateNotice" Grid.Row="4" Title="Yeni sürüm mevcut" Severity="Informational" IsOpen="False" IsClosable="True" Margin="12,0,12,8">
    <InfoBar.ActionButton><Button Content="Güncelle" Click="Update_Click"/></InfoBar.ActionButton>

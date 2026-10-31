@@ -7,7 +7,7 @@ C# / .NET 10 / WinUI 3 ile çevrim dışı Windows PDF görüntüleyici temel s�
 
 Yerel PDF açma, sanallaştırılmış dikey sayfa listesi, önceki/sonraki sayfa, numarayla gitme (Enter), yakınlaştırma, genişliğe sığdırma ve sistem/açık/koyu tema. Kullanıcı arayüzündeki uygulama adı PDF Viewer'dır. PDF düzenleme, dönüştürme, üyelik veya ağ servisi yoktur.
 
-Görüntüler yalnızca gerçekleşen ListView öğelerinde tutulur; öğe geri dönüştürüldüğünde bırakılır. PDF sayfaları tek bir işlem kuyruğunda, gerektiğinde rasterleştirilir. Disk önbelleği yoktur. Sayfa görselleri en fazla 2560 piksel kenar uzunluğundadır; yüksek yakınlaştırmada keskinlik bu sınırla sınırlıdır. Sayfa boy oranı ilk render sırasında öğrenilir; karma boyutlu belgelerde ilk kaydırma sırasında konum değişebilir. Metin seçimi ve ekran okuyucuyla PDF metni okuma henüz yoktur.
+Görüntüler yalnızca gerçekleşen ListView öğelerinde tutulur; öğe geri dönüştürüldüğünde bırakılır. PDF sayfaları tek bir işlem kuyruğunda, gerektiğinde rasterleştirilir. Disk önbelleği yoktur. Sayfa görselleri en fazla 2560 piksel kenar uzunluğundadır; yüksek yakınlaştırmada keskinlik bu sınırla sınırlıdır. Sayfa boyutları açılış sırasında arka planda belirlenir; ilk görüntüleme sırasında sayfa yüksekliği değiştirilmez. Yeniden boyutlandırma kısa bir gecikmeyle birleştirilir, eski görüntü yenisi hazır olana kadar korunur. Metin seçimi ve ekran okuyucuyla PDF metni okuma henüz yoktur.
 
 ## Windows'ta derleme
 
@@ -30,7 +30,7 @@ Son komut `artifacts/PDF-Viewer-Setup-x64.exe` tek kurulum dosyasını ve `artif
 
 - `src/PdfViewer`: WinUI görünümleri, MVVM durumu ve PDF oturumu.
 - `src/PdfViewer.Core`: Windows'tan bağımsız boyut, gezinme ve kaynak sınırları.
-- `tests`: kaynak sınırlarının birim testleri.
+- `tests`: kaynak/gezinme/güncelleme birim testleri ve Windows PDF motoru testleri.
 - `docs`: motor seçimi, güvenlik sınırları ve Windows test planı.
 - `scripts`: test belgesi üretimi ve Windows paketleme.
 

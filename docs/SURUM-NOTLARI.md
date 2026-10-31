@@ -14,7 +14,7 @@ V0.0.4: Tek araç çubuğu, daha sade belge alanı ve sayfa boyutu, yakınlaşt�
 
 Uygulama açılışta ve açıkken dakikada bir denetler; **Yeni sürüm mevcut** bildirimi gösterir. Onayınızla güncelleme indirilip doğrulanır; mevcut kurulumun üzerine uygulanır ve PDF Viewer yeniden açılır. Ayrı uygulama kurulmaz.
 
-İstediğiniz zaman **Güncelle** düğmesini de kullanabilirsiniz. Denetim internet gerektirir; PDF görüntüleme çevrim dışı çalışır.
+İstediğiniz zaman **Diğer (⋯) → Güncellemeleri denetle** seçeneğini de kullanabilirsiniz. Denetim internet gerektirir; PDF görüntüleme çevrim dışı çalışır.
 
 **V0.0.1** kuruluysa bu sürümü almak için **Güncelle** düğmesini kullanın. Otomatik bildirimler **V0.0.2** ile başlar. Eski **v0.1.0** için kurulumu bir kez elle indirin.
 

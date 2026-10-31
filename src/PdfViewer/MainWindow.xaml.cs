@@ -48,9 +48,10 @@ public sealed partial class MainWindow : Window
     {
         Root.Loaded -= OnRootLoaded;
         rasterScale = Root.XamlRoot.RasterizationScale;
-        Root.XamlRoot.Changed += (_, _) =>
+        Root.XamlRoot.Changed += (root, _) =>
         {
-            var scale = Root.XamlRoot.RasterizationScale;
+            if (closed) return;
+            var scale = root.RasterizationScale;
             if (Math.Abs(scale - rasterScale) < .001) return;
             rasterScale = scale;
             QueueResize();
@@ -188,14 +189,16 @@ public sealed partial class MainWindow : Window
     private async Task RenderPageAsync(PdfPageItem page, bool force = false)
     {
         var source = session;
-        if (source is null || closed || rendering.ContainsKey(page) || (!force && page.Image is not null)) return;
+        if (source is null || closed || rendering.ContainsKey(page) || (!force && page.Image is not null && Math.Abs(page.RenderedWidth - page.Width) < .01 && Math.Abs(page.RenderedScale - rasterScale) < .001)) return;
+        var requestedWidth = page.Width;
+        var requestedScale = rasterScale;
         var pending = new CancellationTokenSource();
         rendering.Add(page, pending);
         page.Error = "";
         page.IsRendering = page.Image is null;
         try
         {
-            var result = await source.RenderAsync(page.Index, page.Width, rasterScale, pending.Token);
+            var result = await source.RenderAsync(page.Index, requestedWidth, requestedScale, pending.Token);
             pending.Token.ThrowIfCancellationRequested();
             using var stream = new InMemoryRandomAccessStream();
             using (var writer = new DataWriter(stream.GetOutputStreamAt(0)))
@@ -208,10 +211,12 @@ public sealed partial class MainWindow : Window
             await bitmap.SetSourceAsync(stream);
             pending.Token.ThrowIfCancellationRequested();
             if (source != session || closed) return;
+            page.RenderedWidth = requestedWidth;
+            page.RenderedScale = requestedScale;
             page.Image = bitmap;
         }
         catch (OperationCanceledException) { }
-        catch (Exception ex)
+        catch (Exception)
         {
             if (!pending.IsCancellationRequested && !closed) page.Error = "Bu sayfa görüntülenemedi. Yeniden deneyin veya farklı bir PDF açın.";
         }
@@ -246,7 +251,7 @@ public sealed partial class MainWindow : Window
             var targetTop = oldTop * container.ActualHeight / oldHeight;
             scroll.ChangeView(ViewModel.FitWidth ? 0 : null, Math.Max(0, scroll.VerticalOffset + top - targetTop), null, true);
         }
-        foreach (var page in visible.Where(realized.Contains)) _ = RenderPageAsync(page, true);
+        foreach (var page in visible.Where(realized.Contains)) _ = RenderPageAsync(page);
         UpdateZoomLabel();
     }
     private void UpdateZoomLabel()
@@ -293,10 +298,11 @@ public sealed partial class MainWindow : Window
     private void PageNumber_LostFocus(object sender, RoutedEventArgs e) => PageNumber.Text = ViewModel.CurrentPage.ToString();
     private void Theme_Click(object sender, RoutedEventArgs e)
     {
-        SystemTheme.IsChecked = sender == SystemTheme;
-        LightTheme.IsChecked = sender == LightTheme;
-        DarkTheme.IsChecked = sender == DarkTheme;
-        Root.RequestedTheme = sender == LightTheme ? ElementTheme.Light : sender == DarkTheme ? ElementTheme.Dark : ElementTheme.Default;
+        if (sender is not ToggleMenuFlyoutItem item) return;
+        SystemTheme.IsChecked = item == SystemTheme;
+        LightTheme.IsChecked = item == LightTheme;
+        DarkTheme.IsChecked = item == DarkTheme;
+        Root.RequestedTheme = item == LightTheme ? ElementTheme.Light : item == DarkTheme ? ElementTheme.Dark : ElementTheme.Default;
     }
     private void PageList_Loaded(object sender, RoutedEventArgs e) => AttachScroll();
     private void AttachScroll()

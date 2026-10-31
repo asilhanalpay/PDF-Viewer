@@ -11,6 +11,8 @@ public sealed class PdfPageItem(int index, PdfPageSize size) : ObservableObject
     private double width = size.Width;
     public double Width => width;
     public double Height => width * Size.Aspect;
+    public double RenderedWidth { get; set; }
+    public double RenderedScale { get; set; }
     private BitmapImage? image;
     public BitmapImage? Image { get => image; set { image = value; Changed(); } }
     private bool isRendering;
