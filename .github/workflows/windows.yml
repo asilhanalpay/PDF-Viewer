@@ -73,5 +73,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create $env:GITHUB_REF_NAME ./release-files/*.exe --title "PDF Viewer $env:GITHUB_REF_NAME" --notes-file docs/SURUM-NOTLARI.md --verify-tag
+          $files = Get-ChildItem ./release-files/*.exe | ForEach-Object { $_.FullName }
+          gh release create $env:GITHUB_REF_NAME @files --title "PDF Viewer $env:GITHUB_REF_NAME" --notes-file docs/SURUM-NOTLARI.md --verify-tag
           if ($LASTEXITCODE -ne 0) { throw 'Sürüm yayımlanamadı' }

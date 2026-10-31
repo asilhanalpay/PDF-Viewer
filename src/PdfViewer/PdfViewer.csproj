@@ -21,4 +21,11 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260921001" />
     <ProjectReference Include="../PdfViewer.Core/PdfViewer.Core.csproj" />
   </ItemGroup>
+  <Target Name="CopyWinUIResourcesToPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <_WinUIResource Include="$(OutDir)**/*.pri;$(OutDir)**/*.xbf" />
+    </ItemGroup>
+    <Message Importance="high" Text="WinUI kaynakları: @(_WinUIResource)" />
+    <Copy SourceFiles="@(_WinUIResource)" DestinationFiles="@(_WinUIResource->'$(PublishDir)%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
 </Project>

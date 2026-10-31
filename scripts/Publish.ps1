@@ -10,7 +10,10 @@ if ($LASTEXITCODE -ne 0) { throw 'Dependency audit failed' }
 # Audit output must also be reviewed: this command does not fail on reported vulnerabilities.
 dotnet publish "$root/src/PdfViewer/PdfViewer.csproj" -c Release -r $Runtime -p:Platform=$platform -p:PublishSingleFile=false -o $output
 if ($LASTEXITCODE -ne 0) { throw 'Publish failed' }
-if (!(Test-Path "$output/resources.pri")) { throw 'Arayüz kaynak dizini eksik: resources.pri' }
+if (!(Test-Path "$output/resources.pri")) {
+    Get-ChildItem "$root/src/PdfViewer/bin" -Recurse -Include *.pri,*.xbf | Select-Object FullName
+    throw 'Arayüz kaynak dizini eksik: resources.pri'
+}
 if ($Runtime -eq 'win-x64') { & "$root/scripts/SmokeTest.ps1" -ExePath "$output/PdfViewer.exe" }
 Copy-Item "$root/README.md","$root/THIRD-PARTY-NOTICES.md" $output
 Compress-Archive -Path "$output/*" -DestinationPath "$root/artifacts/PDF-Viewer-$Runtime.zip" -Force
