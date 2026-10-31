@@ -2,7 +2,7 @@
 
 ## Tamamlanan kontroller
 
-- Linux üzerinde .NET 10 SDK ile **14 test geçti**. Kaynak sınırları, gezinme, yeni sürüm algılama, güvenilir indirme adresi, özet zorunluluğu, ön sürüm atlama ve hatalı indirme reddi test edildi.
+- Linux üzerinde .NET 10 SDK ile **15 test geçti**. Kaynak sınırları, gezinme, yeni sürüm algılama, güvenilir indirme adresi, özet zorunluluğu, ön sürüm atlama ve hatalı indirme reddi test edildi.
 - GitHub Actions **41197706131**: Windows üzerinde **x64 ve ARM64 derlemesi ve Inno Setup EXE üretimi başarılı**.
 - Aynı çalıştırmada **x64 uygulaması hem taşınabilir klasörden hem kurulumdan sonra açıldı**; pencere oluşumu ve erken kapanmama doğrulandı.
 - NuGet taramasında o anda bildirilen savunmasız paket bulunmadı. Bu sonuç işletim sistemi PDF motorunun güvenliğine garanti vermez.
@@ -30,3 +30,9 @@ CI Windows Server 2022 ortamındadır; gerçek Windows 10 ve Windows 11 cihazlar
 | İkinci sürümün uygulama içinden kurulması | Onay, doğrulama, sürüm yükseltme ve yeniden açılış başarılı |
 
 İlk sayfa süresi ve bellek kullanımı henüz ölçülmedi. En az 20 belge aç/kapat döngüsü, uzun kaydırma ve gerçek bozuk/şifreli belge testleri yapılmalıdır.
+
+## Sürüm numaralandırması
+
+V0.0.1 ile yeni numaralandırma başlatıldı. Güncelleme ayrıştırıcısı hem `V` hem `v` önekini kabul eder; bu uyumluluk testi de geçti. Eski v0.1.0 kurulumu için ilk geçiş elle yapılmalıdır.
+
+V0.0.1 sürümü için **41198484239** çalıştırmasında 15 test, her iki mimarinin paket üretimi ve x64 kurulum/açılış testi geçti; sürüm yayımlandı.
