@@ -14,11 +14,11 @@ V0.0.1 kullananlar V0.0.2'yi mevcut **Güncelle** düğmesiyle alabilir; otomati
 
 ## Yeni sürüm yayımlama
 
-1. `src/PdfViewer/PdfViewer.csproj` içindeki `Version` değerini artırın (örneğin `0.0.2`).
+1. `src/PdfViewer/PdfViewer.csproj` içindeki `Version` değerini artırın (örneğin `0.0.3`).
 2. `docs/SURUM-NOTLARI.md` içeriğini güncelleyin; Windows kabul testlerini tamamlayın.
-3. Değişiklikleri gönderip sürümle aynı etiketi oluşturun: `git tag V0.0.2` ve `git push origin V0.0.2`.
+3. Değişiklikleri gönderip sürümle aynı etiketi oluşturun: `git tag V0.0.3` ve `git push origin V0.0.3`.
 4. Windows iş akışı test, derleme ve kurulum üretimini yapar; hepsi başarılıysa EXE'leri GitHub Releases üzerinde yayımlar. Uygulama artık bu sürümü bulur.
 
-Kod imzalama sertifikası henüz sağlanmadığı için kurulumlar imzasızdır. Otomatik imzalama ve sertifika sırları ileride eklenmelidir. x64 kurulum ve pencere açılış testi CI'da; ARM64 çalışma testi fiziksel ARM64 cihazda yapılmalıdır. İki sürüm arasında gerçek yükseltme ilk sürümle tek başına doğrulanamaz; Windows CI yerinde yükseltme testiyle ayrıca denetlenir.
+Kod imzalama sertifikası henüz sağlanmadığı için kurulumlar imzasızdır. Otomatik imzalama ve sertifika sırları ileride eklenmelidir. x64 kurulum ve pencere açılış testi CI'da; ARM64 çalışma testi fiziksel ARM64 cihazda yapılmalıdır. V0.0.1 → V0.0.2 yerinde yükseltmesi Windows CI üzerinde doğrulandı.
 
 Sürüm sırası **V0.0.1 → V0.0.2 → V0.0.3** şeklindedir. Eski `v0.1.0` kurulumu kullanılıyorsa numaralandırma değişimi için V0.0.1 kurulum dosyası bir kez elle çalıştırılmalıdır. Sonraki sürümler uygulama içinden denetlenebilir.
