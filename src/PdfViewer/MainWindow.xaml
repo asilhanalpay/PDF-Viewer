@@ -1,0 +1,32 @@
+<Window x:Class="PdfViewer.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:models="using:PdfViewer.Models" Title="PDF Viewer">
+ <Grid x:Name="Root" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+  <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+  <Grid Padding="24,16"><StackPanel Orientation="Horizontal" Spacing="12"><FontIcon Glyph="&#xEA90;"/><TextBlock Text="PDF Viewer" FontSize="20" FontWeight="SemiBold"/></StackPanel></Grid>
+  <Grid Grid.Row="1" Padding="16,0,16,12" ColumnSpacing="12">
+   <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+   <Button Content="PDF aç" Click="Open_Click" IsEnabled="{x:Bind ViewModel.CanOpen, Mode=OneWay}" AutomationProperties.Name="PDF dosyası aç"/>
+   <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.FileName, Mode=OneWay}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+   <ComboBox x:Name="ThemePicker" Grid.Column="2" SelectedIndex="0" SelectionChanged="Theme_Changed" AutomationProperties.Name="Tema"><ComboBoxItem Content="Sistem"/><ComboBoxItem Content="Açık"/><ComboBoxItem Content="Koyu"/></ComboBox>
+  </Grid>
+  <InfoBar Grid.Row="2" IsOpen="{x:Bind ViewModel.HasError, Mode=OneWay}" Message="{x:Bind ViewModel.Error, Mode=OneWay}" Severity="Error" IsClosable="False" Margin="16,0,16,8"/>
+  <Grid Grid.Row="3" Background="{ThemeResource LayerOnAcrylicFillColorDefaultBrush}" SizeChanged="Viewport_Changed">
+   <StackPanel x:Name="Welcome" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12"><FontIcon Glyph="&#xEA90;" FontSize="48"/><TextBlock Text="Belgenize odaklanın." FontSize="28" FontWeight="SemiBold"/><TextBlock Text="Başlamak için yerel bir PDF dosyası açın." Opacity="0.65"/><TextBlock Text="Çevrim dışı · Yalnızca görüntüleme" Opacity="0.5"/></StackPanel>
+   <ListView x:Name="PageList" SelectionMode="None" IsItemClickEnabled="False" HorizontalContentAlignment="Center" ContainerContentChanging="Page_Changing" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollMode="Enabled" Loaded="PageList_Loaded">
+    <ListView.ItemsPanel><ItemsPanelTemplate><ItemsStackPanel Orientation="Vertical" CacheLength="0"/></ItemsPanelTemplate></ListView.ItemsPanel>
+    <ListView.ItemContainerStyle><Style TargetType="ListViewItem"><Setter Property="HorizontalContentAlignment" Value="Center"/><Setter Property="Padding" Value="0"/><Setter Property="Margin" Value="16,8"/></Style></ListView.ItemContainerStyle>
+    <ListView.ItemTemplate><DataTemplate x:DataType="models:PdfPageItem"><Border Width="{x:Bind Width, Mode=OneWay}" Height="{x:Bind Height, Mode=OneWay}" Background="White" CornerRadius="2"><Grid><Image Source="{x:Bind Image, Mode=OneWay}" Stretch="Fill" AutomationProperties.Name="{x:Bind Label}"/><TextBlock Text="{x:Bind Error, Mode=OneWay}" Foreground="Black" TextWrapping="Wrap" Margin="24" VerticalAlignment="Center"/></Grid></Border></DataTemplate></ListView.ItemTemplate>
+   </ListView>
+   <ProgressRing IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="48" Height="48"/>
+  </Grid>
+  <Grid Grid.Row="4" Padding="16,10" ColumnSpacing="8" IsEnabled="{x:Bind ViewModel.HasDocument, Mode=OneWay}">
+   <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+   <Button Content="&#xE76B;" FontFamily="Segoe Fluent Icons" Click="Previous_Click" AutomationProperties.Name="Önceki sayfa"/>
+   <NumberBox x:Name="PageNumber" Grid.Column="1" Width="90" Minimum="1" Maximum="{x:Bind ViewModel.PageCount, Mode=OneWay}" Value="{x:Bind ViewModel.CurrentPage, Mode=OneWay}" KeyDown="PageNumber_KeyDown" AutomationProperties.Name="Sayfa numarası"/>
+   <TextBlock Grid.Column="2" Text="{x:Bind ViewModel.PageCount, Mode=OneWay}" VerticalAlignment="Center"/>
+   <Button Grid.Column="3" Content="&#xE76C;" FontFamily="Segoe Fluent Icons" Click="Next_Click" AutomationProperties.Name="Sonraki sayfa"/>
+   <Button Grid.Column="5" Content="−" Click="ZoomOut_Click" AutomationProperties.Name="Uzaklaştır"/>
+   <Button Grid.Column="6" Content="+" Click="ZoomIn_Click" AutomationProperties.Name="Yakınlaştır"/>
+   <Button Grid.Column="7" Content="Genişliğe sığdır" Click="Fit_Click"/>
+  </Grid>
+ </Grid>
+</Window>
