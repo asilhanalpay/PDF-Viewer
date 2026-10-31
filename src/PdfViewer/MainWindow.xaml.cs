@@ -23,6 +23,8 @@ public sealed partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        ThemePicker.SelectionChanged += Theme_Changed;
+        PageList.SizeChanged += Viewport_Changed;
         AppWindow.Resize(new Windows.Graphics.SizeInt32(1150, 850));
         PageList.ItemsSource = ViewModel.Pages;
         Closed += async (_, _) =>
@@ -84,6 +86,7 @@ public sealed partial class MainWindow : Window
             opened = null;
             ViewModel.Fit();
             ViewModel.SetDocument(file.Name, session.PageCount);
+            PageNumber.Maximum = ViewModel.PageCount;
             ResizePages();
             Welcome.Visibility = Visibility.Collapsed;
             Title = "PDF Viewer";

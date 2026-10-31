@@ -11,9 +11,20 @@ public partial class App : Application
             {
                 var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PDF Viewer");
                 Directory.CreateDirectory(folder);
-                File.WriteAllText(Path.Combine(folder, "startup-error.log"), args.Exception.ToString());
+                File.WriteAllText(Path.Combine(folder, "startup-error.log"), args.Message + Environment.NewLine + args.Exception.ToString());
             }
             catch { /* Preserve the original failure if logging is unavailable. */ }
+        };
+        DebugSettings.IsXamlResourceReferenceTracingEnabled = true;
+        DebugSettings.XamlResourceReferenceFailed += (_, args) =>
+        {
+            try
+            {
+                var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PDF Viewer");
+                Directory.CreateDirectory(folder);
+                File.AppendAllText(Path.Combine(folder, "resource-error.log"), args.Message + Environment.NewLine);
+            }
+            catch { }
         };
         InitializeComponent();
     }
