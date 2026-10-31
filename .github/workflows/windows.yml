@@ -23,6 +23,22 @@ jobs:
       - name: Test et ve taşınabilir paket oluştur
         shell: pwsh
         run: ./scripts/Publish.ps1 -Runtime ${{ matrix.runtime }}
+      - name: x64 kurulumunu ve pencere açılışını doğrula
+        if: matrix.runtime == 'win-x64'
+        shell: pwsh
+        run: |
+          $installDir = Join-Path $env:RUNNER_TEMP 'PDF Viewer Test'
+          $setup = Start-Process ./artifacts/PDF-Viewer-Setup-x64.exe -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/DIR=`"$installDir`"" -Wait -PassThru
+          if ($setup.ExitCode -ne 0) { throw "Kurulum başarısız: $($setup.ExitCode)" }
+          $app = Start-Process "$installDir/PdfViewer.exe" -PassThru
+          try {
+            Start-Sleep -Seconds 10
+            $app.Refresh()
+            if ($app.HasExited) { throw "Uygulama erken kapandı: $($app.ExitCode)" }
+            if ($app.MainWindowHandle -eq 0) { throw 'Uygulama penceresi oluşmadı' }
+          } finally {
+            if (!$app.HasExited) { Stop-Process -Id $app.Id -Force }
+          }
       - uses: actions/upload-artifact@v4
         with:
           name: PDF-Viewer-${{ matrix.runtime }}
