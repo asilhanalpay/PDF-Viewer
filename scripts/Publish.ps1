@@ -8,7 +8,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Tests failed' }
 if ($Runtime -eq 'win-x64') {
     python "$root/scripts/generate-fixtures.py"
     if ($LASTEXITCODE -ne 0) { throw 'PDF test dosyaları üretilemedi' }
-    $env:PDF_VIEWER_FIXTURES = "$root/artifacts/fixtures"
+    $env:PDF_VIEWER_FIXTURES = (Resolve-Path "$root/artifacts/fixtures").Path
     dotnet test "$root/tests/PdfViewer.Windows.Tests" -c Release
     if ($LASTEXITCODE -ne 0) { throw 'Windows PDF görüntüleme testleri başarısız' }
 }

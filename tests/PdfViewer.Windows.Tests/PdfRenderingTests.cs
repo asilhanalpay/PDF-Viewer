@@ -8,7 +8,7 @@ using Xunit;
 namespace PdfViewer.Windows.Tests;
 public class PdfRenderingTests
 {
-    private static string Fixture(string name) => Path.Combine(Environment.GetEnvironmentVariable("PDF_VIEWER_FIXTURES") ?? throw new InvalidOperationException("PDF_VIEWER_FIXTURES eksik"), name);
+    private static string Fixture(string name) => Path.GetFullPath(Path.Combine(Environment.GetEnvironmentVariable("PDF_VIEWER_FIXTURES") ?? throw new InvalidOperationException("PDF_VIEWER_FIXTURES eksik"), name));
     private static async Task<PdfSession> Open(string name) => await PdfSession.OpenAsync(await StorageFile.GetFileFromPathAsync(Fixture(name)));
     private static async Task<(uint Width, uint Height)> Decode(byte[] bytes)
     {
@@ -58,7 +58,8 @@ public class PdfRenderingTests
     [Theory] [InlineData("empty.pdf")] [InlineData("broken.pdf")] [InlineData("encrypted.pdf")]
     public async Task InvalidOrPasswordProtectedFilesAreRejected(string name)
     {
-        await Assert.ThrowsAnyAsync<Exception>(async () => { await using var ignored = await Open(name); });
+        var file = await StorageFile.GetFileFromPathAsync(Fixture(name));
+        await Assert.ThrowsAnyAsync<Exception>(async () => { await using var ignored = await PdfSession.OpenAsync(file); });
     }
     [Fact] public async Task FileSizeLimitRunsBeforeParsing()
     {

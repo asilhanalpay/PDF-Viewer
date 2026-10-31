@@ -31,3 +31,11 @@ public class PageGeometryTests
  public void InvalidScaleCannotGenerateInvalidRaster(double scale)
  { var size=DocumentPolicy.RasterSize(595,842,scale); Assert.InRange(size.Width,1u,2560u); }
 }
+
+public class ZoomDirectionTests
+{
+ [Theory] [InlineData(4,1.2)] [InlineData(.1,.8)] [InlineData(3,1.2)] [InlineData(.25,.8)]
+ public void FitOutsideManualBoundsDoesNotReverseZoom(double current,double factor)
+ { Assert.Null(DocumentPolicy.ZoomStep(current,factor)); }
+ [Fact] public void NormalZoomStepStillWorks() => Assert.Equal(1.2,DocumentPolicy.ZoomStep(1,1.2));
+}

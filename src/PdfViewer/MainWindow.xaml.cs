@@ -114,7 +114,7 @@ public sealed partial class MainWindow : Window
         {
             if (!closed) ViewModel.Error = ex is InvalidDataException ? ex.Message : "Güncelleme denetlenemedi veya indirilemedi. İnternet bağlantısını kontrol edip yeniden deneyin.";
         }
-        finally { updateBusy = false; if (!closed) { UpdateButton.Text = "Güncelle"; UpdateButton.IsEnabled = true; } }
+        finally { updateBusy = false; if (!closed) { UpdateButton.Text = "Güncellemeleri denetle"; UpdateButton.IsEnabled = true; } }
     }
     private async void Open_Click(object sender, RoutedEventArgs e)
     {
@@ -260,7 +260,9 @@ public sealed partial class MainWindow : Window
     {
         if (!ViewModel.HasDocument) return;
         var page = ViewModel.Pages[Math.Max(0, ViewModel.CurrentPage - 1)];
-        ViewModel.SetZoom(page.Width / page.Size.Width * factor);
+        var next = DocumentPolicy.ZoomStep(page.Width / page.Size.Width, factor);
+        if (next is null) return;
+        ViewModel.SetZoom(next.Value);
         ResizePages();
     }
     private void ZoomIn_Click(object sender, RoutedEventArgs e) => ChangeZoom(1.2);

@@ -7,6 +7,13 @@ public static class DocumentPolicy
     public const int MaximumRasterSide = 2560;
     public static double ClampZoom(double zoom) => double.IsFinite(zoom) ? Math.Clamp(zoom, .25, 3) : 1;
     public static int ClampPage(int page, int count) => count <= 0 ? 0 : Math.Clamp(page, 1, count);
+    public static double? ZoomStep(double current, double factor)
+    {
+        var next = ClampZoom(current * factor);
+        // Fit-to-width can be outside manual zoom bounds; a click must never reverse direction.
+        if (factor > 1 && next <= current || factor < 1 && next >= current) return null;
+        return next;
+    }
     public static double PageWidth(double naturalWidth, double viewportWidth, bool fit, double zoom)
     {
         if (!double.IsFinite(naturalWidth) || naturalWidth <= 0) throw new ArgumentOutOfRangeException(nameof(naturalWidth));
