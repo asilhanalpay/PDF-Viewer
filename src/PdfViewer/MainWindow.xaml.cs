@@ -187,7 +187,7 @@ public sealed partial class MainWindow : Window
     }
     private void Theme_Changed(object sender, SelectionChangedEventArgs e)
     {
-        if (Root is not null) Root.RequestedTheme = ThemePicker.SelectedIndex switch { 1 => ElementTheme.Light, 2 => ElementTheme.Dark, _ => ElementTheme.Default };
+        if (Root is not null && sender is ComboBox picker) Root.RequestedTheme = picker.SelectedIndex switch { 1 => ElementTheme.Light, 2 => ElementTheme.Dark, _ => ElementTheme.Default };
     }
     private void PageList_Loaded(object sender, RoutedEventArgs e)
     {

@@ -34,7 +34,11 @@ jobs:
           try {
             Start-Sleep -Seconds 10
             $app.Refresh()
-            if ($app.HasExited) { throw "Uygulama erken kapandı: $($app.ExitCode)" }
+            if ($app.HasExited) {
+              Get-Content "$env:LOCALAPPDATA/PDF Viewer/startup-error.log" -ErrorAction SilentlyContinue
+              Get-WinEvent -FilterHashtable @{LogName='Application'; StartTime=(Get-Date).AddMinutes(-2)} -ErrorAction SilentlyContinue | Select-Object -First 5 | Format-List Message
+              throw "Uygulama erken kapandı: $($app.ExitCode)"
+            }
             if ($app.MainWindowHandle -eq 0) { throw 'Uygulama penceresi oluşmadı' }
           } finally {
             if (!$app.HasExited) { Stop-Process -Id $app.Id -Force }
