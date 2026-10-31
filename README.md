@@ -6,9 +6,15 @@ PDF dosyalarınızı çevrim dışı açın; sayfalar arasında gezinin, yakınl
 
 ### İndir
 
-[Windows için indir (.exe)](https://github.com/asilhanalpay/PDF-Viewer/releases/latest/download/PDF-Viewer-Setup-x64.exe) · [ARM64](https://github.com/asilhanalpay/PDF-Viewer/releases/latest/download/PDF-Viewer-Setup-arm64.exe)
+**[Windows için indir (.exe)]**(https://github.com/asilhanalpay/PDF-Viewer/releases/latest/download/PDF-Viewer-Setup-x64.exe) · [ARM64](https://github.com/asilhanalpay/PDF-Viewer/releases/latest/download/PDF-Viewer-Setup-arm64.exe)
 
-Tek dosyayla kurun. Yeni sürümler için uygulamadaki **Güncelle** düğmesini kullanın.
+İndirdiğiniz dosyayı açıp kurulumu tamamlayın. Ek .NET kurulumu gerekmez.
+
+### Güncelleme
+
+Uygulamadaki **Güncelle** düğmesiyle yeni sürümleri denetleyin. Onayınızla yeni kurulum indirilir ve başlatılır. Bu işlem internet gerektirir.
+
+Eski **v0.1.0** kuruluysa yeni kurulumu bir kez elle indirip çalıştırın.
 
 İlk sürüm geliştirme aşamasındadır. Kurulum dosyası imzasız olduğundan Windows yayımcı uyarısı gösterebilir.
 
