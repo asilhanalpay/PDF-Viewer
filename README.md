@@ -12,7 +12,7 @@ PDF dosyalarınızı çevrim dışı açın; sayfalar arasında gezinin, yakınl
 
 ### Güncelleme
 
-Uygulama açıldığında ve açıkken dört saatte bir yeni sürüm denetlenir. **Yeni sürüm mevcut** bildiriminin ardından onayınızla mevcut kurulum güncellenir ve uygulama yeniden açılır. Ayrı bir uygulama kurulmaz. Güncelleme denetimi internet gerektirir.
+Uygulama açıldığında ve açıkken dakikada bir yeni sürüm denetlenir. **Yeni sürüm mevcut** bildiriminin ardından onayınızla mevcut kurulum güncellenir ve uygulama yeniden açılır. Ayrı bir uygulama kurulmaz. Güncelleme denetimi internet gerektirir.
 
 **Güncelle** düğmesiyle istediğiniz zaman da denetleyebilirsiniz.
 

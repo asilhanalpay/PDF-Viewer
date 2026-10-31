@@ -16,7 +16,26 @@ public sealed class UpdateService : IDisposable
     {
         client = handler is null ? new HttpClient() : new HttpClient(handler);
         client.Timeout = TimeSpan.FromMinutes(10);
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("PDF-Viewer/0.0.2");
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("PDF-Viewer/0.0.3");
+    }
+    public async Task<AvailableUpdate?> CheckAutomaticAsync(CancellationToken token)
+    {
+        // Probe only response headers. Avoid spending anonymous API quota every minute.
+        using var request = new HttpRequestMessage(HttpMethod.Head, $"https://github.com/{Repository}/releases/latest");
+        using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token);
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound) return null;
+        response.EnsureSuccessStatusCode();
+        var final = response.RequestMessage?.RequestUri;
+        var prefix = $"/{Repository}/releases/tag/";
+        if (final is null || final.Scheme != "https" || final.Host != "github.com" ||
+            !final.AbsolutePath.StartsWith(prefix, StringComparison.Ordinal))
+            throw new InvalidDataException("Sürüm adresi doğrulanamadı.");
+        var tag = Uri.UnescapeDataString(final.AbsolutePath[prefix.Length..]);
+        if (!Version.TryParse(tag.TrimStart('v', 'V'), out var latest))
+            throw new InvalidDataException("Sürüm bilgisi okunamadı.");
+        var current = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 0, 3);
+        if (new Version(latest.Major, latest.Minor, Math.Max(0, latest.Build)) <= new Version(current.Major, current.Minor, Math.Max(0, current.Build))) return null;
+        return await CheckAsync(token);
     }
     public async Task<AvailableUpdate?> CheckAsync(CancellationToken token)
     {

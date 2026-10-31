@@ -21,7 +21,7 @@ public sealed partial class MainWindow : Window
     private bool closed;
     private bool updateBusy;
     private readonly CancellationTokenSource lifetime = new();
-    private readonly DispatcherTimer updateTimer = new() { Interval = TimeSpan.FromHours(4) };
+    private readonly DispatcherTimer updateTimer = new() { Interval = TimeSpan.FromMinutes(1) };
     private double pageWidth = 800;
     public MainWindow()
     {
@@ -57,10 +57,11 @@ public sealed partial class MainWindow : Window
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);
             timeout.CancelAfter(TimeSpan.FromSeconds(15));
             using var updates = new UpdateService();
-            var update = await updates.CheckAsync(timeout.Token);
+            var update = await updates.CheckAutomaticAsync(timeout.Token);
             if (closed) return;
             if (update is not null)
             {
+                updateTimer.Stop();
                 UpdateNotice.Message = $"V{update.Version} indirilmeye hazır. Mevcut uygulamanız güncellenecek.";
                 UpdateNotice.IsOpen = true;
             }

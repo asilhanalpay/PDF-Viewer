@@ -4,7 +4,7 @@ Inno Setup 6 ile tek bir kurulum EXE'si üretilir. Uygulama mevcut kullanıcıya
 
 ## Uygulama içinden
 
-Uygulama açılışta ve açık olduğu sürece dört saatte bir GitHub'ın son kararlı sürümünü denetler. Yeni sürüm varsa **Yeni sürüm mevcut** bildirimi gösterilir. Uygulama kapalıyken Windows bildirimi veya arka plan servisi çalışmaz. Çevrim dışı denetim hataları sessizce geçilir; PDF görüntüleme devam eder. **Güncelle** düğmesiyle elle de denetlenebilir.
+Uygulama açılışta ve açık olduğu sürece dakikada bir GitHub'ın son kararlı sürümünü denetler. Yeni sürüm varsa **Yeni sürüm mevcut** bildirimi gösterilir ve tekrar eden denetim durdurulur; indirme sırasında en güncel sürüm yeniden sorgulanır. Denetim önce GitHub web adresinin yalnızca yanıt başlıklarını okur; yeni sürüm görülürse indirme bilgileri API’den alınır. Uygulama kapalıyken Windows bildirimi veya arka plan servisi çalışmaz. Çevrim dışı denetim hataları sessizce geçilir; PDF görüntüleme devam eder. **Güncelle** düğmesiyle elle de denetlenebilir.
 
 Kullanıcı onayından sonra mimariye uygun kurulum dosyası HTTPS ile indirilir ve GitHub varlık bilgisindeki SHA-256 özeti doğrulanır. Uygulama kapanır; kurulum ilerleme ekranıyla mevcut klasördeki dosyaları yeniler ve uygulamayı yeniden açar. Aynı AppId, klasör ve kaldırma kaydı korunur; ikinci bir uygulama kurulmaz. Açık belgeler kapanır. Başarısız indirme mevcut uygulamayı değiştirmez.
 

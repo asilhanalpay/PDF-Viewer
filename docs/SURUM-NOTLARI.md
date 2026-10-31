@@ -10,7 +10,7 @@ Windows 10 ve Windows 11 için sade PDF görüntüleyici.
 
 ### Güncelleme
 
-Uygulama açılışta ve açıkken dört saatte bir denetler; **Yeni sürüm mevcut** bildirimi gösterir. Onayınızla güncelleme indirilip doğrulanır; mevcut kurulumun üzerine uygulanır ve PDF Viewer yeniden açılır. Ayrı uygulama kurulmaz.
+Uygulama açılışta ve açıkken dakikada bir denetler; **Yeni sürüm mevcut** bildirimi gösterir. Onayınızla güncelleme indirilip doğrulanır; mevcut kurulumun üzerine uygulanır ve PDF Viewer yeniden açılır. Ayrı uygulama kurulmaz.
 
 İstediğiniz zaman **Güncelle** düğmesini de kullanabilirsiniz. Denetim internet gerektirir; PDF görüntüleme çevrim dışı çalışır.
 

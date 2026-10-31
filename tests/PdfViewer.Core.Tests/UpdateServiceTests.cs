@@ -45,3 +45,32 @@ public class UpdateServiceTests
         await Assert.ThrowsAsync<InvalidDataException>(() => service.DownloadAsync(new(new Version(99,0,0), new Uri(Url), new string('0',64),"test.exe"),default));
     }
 }
+
+public class AutomaticUpdateTests
+{
+    private sealed class ProbeHandler(string tag) : HttpMessageHandler
+    {
+        public int ApiCalls { get; private set; }
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken token)
+        {
+            if (request.Method == HttpMethod.Head)
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { RequestMessage = new(HttpMethod.Head, $"https://github.com/asilhanalpay/PDF-Viewer/releases/tag/{tag}") });
+            ApiCalls++;
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{\"draft\":false,\"prerelease\":true}") });
+        }
+    }
+    [Fact] public async Task CurrentVersionDoesNotUseApiQuota()
+    {
+        var handler = new ProbeHandler("V0.0.1");
+        using var service = new UpdateService(handler);
+        Assert.Null(await service.CheckAutomaticAsync(default));
+        Assert.Equal(0, handler.ApiCalls);
+    }
+    [Fact] public async Task NewVersionRequiresApiValidation()
+    {
+        var handler = new ProbeHandler("V99.0.0");
+        using var service = new UpdateService(handler);
+        Assert.Null(await service.CheckAutomaticAsync(default)); // API rejects the prerelease.
+        Assert.Equal(1, handler.ApiCalls);
+    }
+}
