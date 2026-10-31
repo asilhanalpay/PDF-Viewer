@@ -12,3 +12,10 @@ dotnet publish "$root/src/PdfViewer/PdfViewer.csproj" -c Release -r $Runtime -p:
 if ($LASTEXITCODE -ne 0) { throw 'Publish failed' }
 Copy-Item "$root/README.md","$root/THIRD-PARTY-NOTICES.md" $output
 Compress-Archive -Path "$output/*" -DestinationPath "$root/artifacts/PDF-Viewer-$Runtime.zip" -Force
+$arch = if ($Runtime -eq 'win-arm64') { 'arm64' } else { 'x64' }
+[xml]$project = Get-Content "$root/src/PdfViewer/PdfViewer.csproj"
+$version = $project.Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
+$iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+if (!(Test-Path $iscc)) { throw 'Inno Setup 6 bulunamadı' }
+& $iscc "/DAppVersion=$version" "/DAppArch=$arch" "$root/installer/PdfViewer.iss"
+if ($LASTEXITCODE -ne 0) { throw 'Kurulum paketi oluşturulamadı' }

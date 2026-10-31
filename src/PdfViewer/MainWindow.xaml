@@ -3,10 +3,11 @@
   <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
   <Grid Padding="24,16"><StackPanel Orientation="Horizontal" Spacing="12"><FontIcon Glyph="&#xEA90;"/><TextBlock Text="PDF Viewer" FontSize="20" FontWeight="SemiBold"/></StackPanel></Grid>
   <Grid Grid.Row="1" Padding="16,0,16,12" ColumnSpacing="12">
-   <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+   <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
    <Button Content="PDF aç" Click="Open_Click" IsEnabled="{x:Bind ViewModel.CanOpen, Mode=OneWay}" AutomationProperties.Name="PDF dosyası aç"/>
    <TextBlock Grid.Column="1" Text="{x:Bind ViewModel.FileName, Mode=OneWay}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
    <ComboBox x:Name="ThemePicker" Grid.Column="2" SelectedIndex="0" SelectionChanged="Theme_Changed" AutomationProperties.Name="Tema"><ComboBoxItem Content="Sistem"/><ComboBoxItem Content="Açık"/><ComboBoxItem Content="Koyu"/></ComboBox>
+   <Button x:Name="UpdateButton" Grid.Column="3" Content="Güncelle" Click="Update_Click" AutomationProperties.Name="Güncellemeleri denetle"/>
   </Grid>
   <InfoBar Grid.Row="2" IsOpen="{x:Bind ViewModel.HasError, Mode=OneWay}" Message="{x:Bind ViewModel.Error, Mode=OneWay}" Severity="Error" IsClosable="False" Margin="16,0,16,8"/>
   <Grid Grid.Row="3" Background="{ThemeResource LayerOnAcrylicFillColorDefaultBrush}" SizeChanged="Viewport_Changed">
@@ -18,7 +19,7 @@
    </ListView>
    <ProgressRing IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="48" Height="48"/>
   </Grid>
-  <Grid Grid.Row="4" Padding="16,10" ColumnSpacing="8" IsEnabled="{x:Bind ViewModel.HasDocument, Mode=OneWay}">
+  <Grid Grid.Row="4" Padding="16,10" ColumnSpacing="8">
    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
    <Button Content="&#xE76B;" FontFamily="Segoe Fluent Icons" Click="Previous_Click" AutomationProperties.Name="Önceki sayfa"/>
    <NumberBox x:Name="PageNumber" Grid.Column="1" Width="90" Minimum="1" Maximum="{x:Bind ViewModel.PageCount, Mode=OneWay}" Value="{x:Bind ViewModel.CurrentPage, Mode=OneWay}" KeyDown="PageNumber_KeyDown" AutomationProperties.Name="Sayfa numarası"/>

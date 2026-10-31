@@ -32,6 +32,36 @@ public sealed partial class MainWindow : Window
             if (session is not null) await session.DisposeAsync();
         };
     }
+    private async void Update_Click(object sender, RoutedEventArgs e)
+    {
+        UpdateButton.IsEnabled = false;
+        using var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(10));
+        using var updates = new UpdateService();
+        try
+        {
+            UpdateButton.Content = "Denetleniyor…";
+            var update = await updates.CheckAsync(cancellation.Token);
+            var dialog = new ContentDialog
+            {
+                XamlRoot = Root.XamlRoot,
+                Title = update is null ? "PDF Viewer güncel" : $"Yeni sürüm: {update.Version}",
+                Content = update is null ? "Kullanılabilir yeni sürüm bulunamadı." : "Güncelleme indirilecek ve kurulum başlayacak. Açık belgeler kapanacak.",
+                CloseButtonText = "Kapat",
+                PrimaryButtonText = update is null ? "" : "İndir ve kur"
+            };
+            if (await dialog.ShowAsync() != ContentDialogResult.Primary || update is null) return;
+            UpdateButton.Content = "İndiriliyor…";
+            var installer = await updates.DownloadAsync(update, cancellation.Token);
+            if (closed) return;
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(installer) { UseShellExecute = true });
+            Close();
+        }
+        catch (Exception ex)
+        {
+            if (!closed) ViewModel.Error = ex is InvalidDataException ? ex.Message : "Güncelleme denetlenemedi veya indirilemedi. İnternet bağlantısını kontrol edip yeniden deneyin.";
+        }
+        finally { if (!closed) { UpdateButton.Content = "Güncelle"; UpdateButton.IsEnabled = true; } }
+    }
     private async void Open_Click(object sender, RoutedEventArgs e)
     {
         if (ViewModel.IsBusy) return;
