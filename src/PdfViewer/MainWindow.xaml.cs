@@ -28,6 +28,7 @@ public sealed partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        AppWindow.SetIcon(ApplicationIdentity.IconPath);
         PageList.SizeChanged += (_, _) => QueueResize();
         resizeTimer.Tick += (_, _) => { resizeTimer.Stop(); ResizePages(); };
         AppWindow.Resize(new Windows.Graphics.SizeInt32(1150, 850));

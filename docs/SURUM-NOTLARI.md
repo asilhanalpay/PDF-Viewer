@@ -1,6 +1,6 @@
 Windows 10 ve Windows 11 için sade PDF görüntüleyici.
 
-V0.0.4: Tek araç çubuğu, daha sade belge alanı ve sayfa boyutu, yakınlaştırma, kaydırma ile yeniden boyutlandırma düzeltmeleri.
+V0.0.5: Yeni uygulama ikonu; görev çubuğu, pencere, EXE, kurulum ve Başlat menüsünde aynı simge.
 
 ### İndir
 

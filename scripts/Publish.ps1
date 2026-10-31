@@ -21,7 +21,7 @@ if (!(Test-Path "$output/resources.pri")) {
     Get-ChildItem "$root/src/PdfViewer/bin" -Recurse -Include *.pri,*.xbf | Select-Object FullName
     throw 'Arayüz kaynak dizini eksik: resources.pri'
 }
-if ($Runtime -eq 'win-x64') { & "$root/scripts/SmokeTest.ps1" -ExePath "$output/PdfViewer.exe" }
+if ($Runtime -eq 'win-x64') { & "$root/scripts/SmokeTest.ps1" -ExePath "$output/PdfViewer.exe" -CheckIcon }
 Copy-Item "$root/README.md","$root/THIRD-PARTY-NOTICES.md" $output
 Compress-Archive -Path "$output/*" -DestinationPath "$root/artifacts/PDF-Viewer-$Runtime.zip" -Force
 $arch = if ($Runtime -eq 'win-arm64') { 'arm64' } else { 'x64' }

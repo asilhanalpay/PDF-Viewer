@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml;
+using PdfViewer.Services;
 namespace PdfViewer;
 public partial class App : Application
 {
@@ -30,6 +31,7 @@ public partial class App : Application
     }
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
+        ApplicationIdentity.Initialize();
         window = new MainWindow();
         window.Activate();
     }

@@ -24,5 +24,11 @@ if ($before.InstallLocation -ne $after.InstallLocation -or $before.UninstallStri
 Start-Sleep -Seconds 10
 $running = Get-Process PdfViewer -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $exe }
 if (!$running -or $running.MainWindowHandle -eq 0) { throw 'Güncelleme sonrası uygulama yeniden açılmadı' }
+& "$PSScriptRoot/Assert-Icon.ps1" -ExePath $exe -ProcessId $running.Id
+$shortcut = Join-Path ([Environment]::GetFolderPath('Programs')) 'PDF Viewer.lnk'
+if (!(Test-Path $shortcut)) { throw 'Başlat menüsü kısayolu eksik' }
+$shell = New-Object -ComObject Shell.Application
+$item = $shell.NameSpace((Split-Path $shortcut -Parent)).ParseName((Split-Path $shortcut -Leaf))
+if ($item.ExtendedProperty('System.AppUserModel.ID') -ne 'PDFViewer.Desktop') { throw 'Kısayol ve görev çubuğu uygulama kimliği eşleşmiyor' }
 $running | Stop-Process -Force
 Write-Output "Yerinde yükseltme başarılı: $previousVersion -> $version.0; aynı klasör ve kaldırma kaydı; otomatik yeniden açılış."

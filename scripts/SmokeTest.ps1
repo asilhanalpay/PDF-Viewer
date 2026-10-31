@@ -1,4 +1,4 @@
-param([Parameter(Mandatory)][string]$ExePath)
+param([Parameter(Mandatory)][string]$ExePath, [switch]$CheckIcon)
 $ErrorActionPreference = 'Stop'
 $app = Start-Process $ExePath -PassThru
 try {
@@ -10,6 +10,7 @@ try {
         throw "Uygulama erken kapandı: $($app.ExitCode)"
     }
     if ($app.MainWindowHandle -eq 0) { throw 'Uygulama penceresi oluşmadı' }
+    if ($CheckIcon) { & "$PSScriptRoot/Assert-Icon.ps1" -ExePath $ExePath -ProcessId $app.Id }
 } finally {
     if (!$app.HasExited) { Stop-Process -Id $app.Id -Force }
 }

@@ -1,5 +1,5 @@
 #ifndef AppVersion
-  #define AppVersion "0.0.4"
+  #define AppVersion "0.0.5"
 #endif
 #ifndef AppArch
   #define AppArch "x64"
@@ -19,6 +19,7 @@ OutputBaseFilename=PDF-Viewer-Setup-{#AppArch}
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
+SetupIconFile=..\src\PdfViewer\Assets\PdfViewer.ico
 UninstallDisplayIcon={app}\PdfViewer.exe
 CloseApplications=yes
 RestartApplications=no
@@ -34,7 +35,7 @@ Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
 [Files]
 Source: "..\artifacts\PDF-Viewer-win-{#AppArch}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 [Icons]
-Name: "{autoprograms}\PDF Viewer"; Filename: "{app}\PdfViewer.exe"
+Name: "{autoprograms}\PDF Viewer"; Filename: "{app}\PdfViewer.exe"; IconFilename: "{app}\PdfViewer.exe"; AppUserModelID: "PDFViewer.Desktop"
 [Run]
 Filename: "{app}\PdfViewer.exe"; Description: "PDF Viewer uygulamasını başlat"; Flags: nowait postinstall skipifsilent
 
