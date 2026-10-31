@@ -2,7 +2,7 @@
 
 ## Tamamlanan kontroller
 
-- Linux üzerinde .NET 10 SDK ile **16 test geçti**. Kaynak sınırları, gezinme, yeni sürüm algılama, güvenilir indirme adresi, özet zorunluluğu, ön sürüm atlama ve hatalı indirme reddi test edildi.
+- Linux üzerinde .NET 10 SDK ile **18 test geçti**. Kaynak sınırları, gezinme, yeni sürüm algılama, güvenilir indirme adresi, özet zorunluluğu, ön sürüm atlama ve hatalı indirme reddi test edildi.
 - GitHub Actions **41197706131**: Windows üzerinde **x64 ve ARM64 derlemesi ve Inno Setup EXE üretimi başarılı**.
 - Aynı çalıştırmada **x64 uygulaması hem taşınabilir klasörden hem kurulumdan sonra açıldı**; pencere oluşumu ve erken kapanmama doğrulandı.
 - NuGet taramasında o anda bildirilen savunmasız paket bulunmadı. Bu sonuç işletim sistemi PDF motorunun güvenliğine garanti vermez.
@@ -40,3 +40,7 @@ V0.0.1 sürümü için **41198484239** çalıştırmasında 15 test, her iki mim
 ## V0.0.2
 
 **41200028055** çalıştırmasında 16 test, x64/ARM64 paket üretimi ve x64 yerinde güncelleme testi geçti. Gerçek V0.0.1 kuruldu; V0.0.2 aynı klasöre uygulandı. Dosya sürümü 0.0.2.0 oldu, kaldırma kaydı ve klasördeki deneme dosyası korundu, uygulama kendiliğinden yeniden açıldı. ARM64 üzerinde yerinde güncelleme çalıştırılmadı. İlk çalıştırma 41199698597, testin kurulumun açtığı uygulamayı da beklemesi nedeniyle iptal edildi; test düzeltildikten sonra yeniden doğrulandı.
+
+## V0.0.3
+
+**41201014937** çalıştırmasında 18 test, x64/ARM64 paket üretimi ve x64 yerinde yükseltme/yeniden açılış testi geçti. Denetim aralığı bir dakikadır. Hafif HTTP HEAD denetimi canlı GitHub adresinde doğrulandı; eski/eşit sürümlerde API kullanılmaması ve yeni sürümün API ile doğrulanması birim testleri geçti. Ağ gecikmesi veya çevrim dışı olma nedeniyle bildirim zamanı kesin değildir.
