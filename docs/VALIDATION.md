@@ -1,6 +1,6 @@
-# Doğrulama durumu — V0.0.4
+# Doğrulama durumu — V0.0.5
 
-[Windows doğrulaması ve yayımlama](https://github.com/asilhanalpay/PDF-Viewer/actions/runs/41248797962)
+[Windows doğrulaması ve yayımlama](https://github.com/asilhanalpay/PDF-Viewer/actions/runs/41250686041)
 
 ## Başarılı kontroller
 
@@ -8,10 +8,18 @@
 - **11 gerçek Windows PDF testi:** 1/100/1000 sayfalık belgelerin ilk ve son sayfaları; portre, yatay ve döndürülmüş sayfalar; bozuk/boş/parola korumalı dosyalar; dosya boyutu ve sayfa dizini sınırları; arka arkaya iptal, yeniden görüntüleme ve oturum kapatma.
 - Sayfa görüntüleri PNG olarak çözüldü; ölçüleri ve boş olmayan açık/koyu piksel içeriği denetlendi. Test belgeleri sentetiktir; tüm gerçek PDF türlerini temsil etmez.
 - **x64 ve ARM64:** WinUI derlemesi ve EXE kurulum paketi üretimi başarılı.
-- **Windows x64:** uygulama penceresi açıldı. Gerçek V0.0.1 kurulumu aynı klasörde V0.0.4'e yükseltildi; dosya sürümü, kaldırma kaydı, mevcut klasörün korunması ve otomatik yeniden açılış doğrulandı.
+- **Windows x64:** uygulama penceresi açıldı. Gerçek V0.0.1 kurulumu aynı klasörde V0.0.5'e yükseltildi; dosya sürümü, kaldırma kaydı, mevcut klasörün korunması ve otomatik yeniden açılış doğrulandı.
 - NuGet taramasında mevcut kaynakların bildirdiği savunmasız uygulama paketi bulunmadı.
 
 İlk Windows test çalıştırmasında test dosyalarının karışık yol ayraçları WinRT tarafından reddedildi. Yollar normalleştirildi; dosyaya erişim doğrulaması negatif PDF testlerinin dışına alındı. Başarısız çalıştırma başarı olarak sayılmadı.
+
+## İkon kontrolleri
+
+Verilen görsel kırpılmadan, üst verisiz PNG kaynak dosyasına aktarıldı. 16–256 piksel arasında 10 boyutlu ICO üretildi. Windows x64 üzerinde EXE'den çıkarılan ikon, kaynak ICO'nun 32 piksel görüntüsüyle piksel düzeyinde eşleşti. Çalışan pencerenin küçük ve büyük `WM_GETICON` tanıtıcıları dolu bulundu. Kurulumdan sonra da aynı kontroller geçti; Başlat menüsü kısayolunun `System.AppUserModel.ID` değeri `PDFViewer.Desktop` olarak doğrulandı.
+
+İlk V0.0.5 derlemesi çift PRI ikon kaydı nedeniyle başarısız oldu; varsayılan WinUI Content kaydı `Update` ile düzenlenerek giderildi. Düzeltilmiş, henüz yayımlanmamış etiket sonrasında bütün testler geçince sürüm yayımlandı.
+
+Windows'un eski sabitlenmiş kısayol/ikon önbelleği bu kontrollerin kapsamı dışındadır. Gerekirse eski sabitleme kaldırılıp yeni Başlat kısayolu yeniden sabitlenmelidir.
 
 ## Düzeltilen sorunlar
 
