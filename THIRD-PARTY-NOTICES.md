@@ -1,8 +1,8 @@
-# Dependency notices
+# Üçüncü taraf bileşenleri
 
-- Microsoft.WindowsAppSDK — Microsoft Windows App SDK; MIT project license, with package-specific third-party and redistributable notices. Review the exact restored NuGet package's license and notices before public distribution: https://github.com/microsoft/WindowsAppSDK
-- .NET runtime — MIT and applicable third-party notices: https://github.com/dotnet/runtime
-- Windows.Data.Pdf — Windows operating-system component, subject to Windows license terms; not a bundled third-party PDF engine.
-- Test-only dependencies: xUnit.net (Apache-2.0), Microsoft.NET.Test.Sdk (MIT), xunit.runner.visualstudio (Apache-2.0).
+- **Microsoft.WindowsAppSDK:** Proje MIT lisanslıdır; paketlere özel üçüncü taraf ve yeniden dağıtım bildirimleri de geçerlidir. Yayımlamadan önce kullanılan paketin lisansını ve bildirimlerini inceleyin. [Kaynak](https://github.com/microsoft/WindowsAppSDK)
+- **.NET çalışma zamanı:** MIT lisansı ve ilgili üçüncü taraf bildirimleri geçerlidir. [Kaynak](https://github.com/dotnet/runtime)
+- **Windows.Data.Pdf:** Windows lisans koşullarına tabi bir işletim sistemi bileşenidir; uygulamayla ayrı bir PDF motoru dağıtılmaz.
+- **Yalnızca testlerde kullanılan bileşenler:** xUnit.net (Apache-2.0), Microsoft.NET.Test.Sdk (MIT), xunit.runner.visualstudio (Apache-2.0).
 
-This inventory does not replace upstream license text. Preserve upstream notices included with self-contained runtime output. No project-wide license has been selected on the owner's behalf.
+Bu liste özgün lisans metinlerinin yerine geçmez. Dağıtım çıktısındaki bileşenlere ait lisans ve bildirimleri koruyun. Projenin tamamı için henüz bir lisans seçilmemiştir.

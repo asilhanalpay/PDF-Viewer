@@ -1,4 +1,4 @@
-name: Windows validation
+name: Windows doğrulaması
 on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
@@ -13,7 +13,7 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-      - name: Test and publish portable package
+      - name: Test et ve taşınabilir paket oluştur
         shell: pwsh
         run: ./scripts/Publish.ps1 -Runtime ${{ matrix.runtime }}
       - uses: actions/upload-artifact@v4
