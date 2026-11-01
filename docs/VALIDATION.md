@@ -1,6 +1,6 @@
-# Doğrulama durumu — V0.0.5
+# Doğrulama durumu — V0.0.6
 
-[Windows doğrulaması ve yayımlama](https://github.com/asilhanalpay/PDF-Viewer/actions/runs/41250686041)
+[Windows doğrulaması ve yayımlama](https://github.com/asilhanalpay/PDF-Viewer/actions/runs/41302883939)
 
 ## Başarılı kontroller
 
@@ -8,14 +8,14 @@
 - **11 gerçek Windows PDF testi:** 1/100/1000 sayfalık belgelerin ilk ve son sayfaları; portre, yatay ve döndürülmüş sayfalar; bozuk/boş/parola korumalı dosyalar; dosya boyutu ve sayfa dizini sınırları; arka arkaya iptal, yeniden görüntüleme ve oturum kapatma.
 - Sayfa görüntüleri PNG olarak çözüldü; ölçüleri ve boş olmayan açık/koyu piksel içeriği denetlendi. Test belgeleri sentetiktir; tüm gerçek PDF türlerini temsil etmez.
 - **x64 ve ARM64:** WinUI derlemesi ve EXE kurulum paketi üretimi başarılı.
-- **Windows x64:** uygulama penceresi açıldı. Gerçek V0.0.1 kurulumu aynı klasörde V0.0.5'e yükseltildi; dosya sürümü, kaldırma kaydı, mevcut klasörün korunması ve otomatik yeniden açılış doğrulandı.
+- **Windows x64:** uygulama penceresi açıldı. Gerçek V0.0.1 kurulumu aynı klasörde V0.0.6'ya yükseltildi; dosya sürümü, kaldırma kaydı, mevcut klasörün korunması ve otomatik yeniden açılış doğrulandı.
 - NuGet taramasında mevcut kaynakların bildirdiği savunmasız uygulama paketi bulunmadı.
 
 İlk Windows test çalıştırmasında test dosyalarının karışık yol ayraçları WinRT tarafından reddedildi. Yollar normalleştirildi; dosyaya erişim doğrulaması negatif PDF testlerinin dışına alındı. Başarısız çalıştırma başarı olarak sayılmadı.
 
 ## İkon kontrolleri
 
-Verilen görsel kırpılmadan, üst verisiz PNG kaynak dosyasına aktarıldı. 16–256 piksel arasında 10 boyutlu ICO üretildi. Windows x64 üzerinde EXE'den çıkarılan ikon, kaynak ICO'nun 32 piksel görüntüsüyle piksel düzeyinde eşleşti. Çalışan pencerenin küçük ve büyük `WM_GETICON` tanıtıcıları dolu bulundu. Kurulumdan sonra da aynı kontroller geçti; Başlat menüsü kısayolunun `System.AppUserModel.ID` değeri `PDFViewer.Desktop` olarak doğrulandı.
+Verilen ikonun kimliği korunarak belge ve PDF yazısı büyütüldü; küçük boyutlar için ayrı optik çizim hazırlandı. 16–256 piksel arasında 14 boyutlu ICO üretildi. Windows x64 üzerinde EXE'den çıkarılan ikon, kaynak ICO'nun 32 piksel görüntüsüyle piksel düzeyinde eşleşti. Çalışan pencerenin küçük ve büyük `WM_GETICON` tanıtıcıları dolu bulundu. Kurulumdan sonra da aynı kontroller geçti; Başlat menüsü kısayolunun `System.AppUserModel.ID` değeri `PDFViewer.Desktop` olarak doğrulandı.
 
 İlk V0.0.5 derlemesi çift PRI ikon kaydı nedeniyle başarısız oldu; varsayılan WinUI Content kaydı `Update` ile düzenlenerek giderildi. Düzeltilmiş, henüz yayımlanmamış etiket sonrasında bütün testler geçince sürüm yayımlandı.
 
@@ -45,4 +45,10 @@ Windows PDF testleri Windows'ta çalıştırılmalıdır. Paketleme betiği de b
 
 [41298253382 doğrulaması](https://github.com/asilhanalpay/PDF-Viewer/actions/runs/41298253382) başarılıdır: 34 birim ve 11 Windows PDF testi geçti. Gerçek V0.0.4, boşluk ve Türkçe karakter içeren, varsayılanın dışında bir klasöre kuruldu. Açılış kontrolünde sürümün kendiliğinden değişmediği görüldü. V0.0.5 kurulumu uygulamanın gerçek `UpdateInstaller.CreateStartInfo` koduyla başlatıldı. Klasör, kaldırma kaydı ve mevcut deneme dosyası korundu; dosya sürümü yenilendi ve uygulama aynı yerden yeniden açıldı.
 
-Otomatik denetimin yalnızca bildirim gösterdiği ve indirme/kurulumun `Update_Click` içindeki kullanıcı onayından sonra başladığı koddan incelendi. Bu koşuda gerçek arayüzde düğmeye basma/onayı reddetme otomasyonu yapılmadı; kurulum protokolü ve sonucu Windows üzerinde test edildi. Uygulama ve kurulum kaynakları V0.0.5 etiketiyle aynıdır; davranış değiştirilmeden testler ve geliştirme kuralları güçlendirildi. Yeni uygulama sürümü yayımlanmadı.
+Otomatik denetimin yalnızca bildirim gösterdiği ve indirme/kurulumun `Update_Click` içindeki kullanıcı onayından sonra başladığı koddan incelendi. Bu koşuda gerçek arayüzde düğmeye basma/onayı reddetme otomasyonu yapılmadı; kurulum protokolü ve sonucu Windows üzerinde test edildi. Bu yeniden kontrol sırasında uygulama ve kurulum kaynakları V0.0.5 etiketiyle aynıydı; davranış değiştirilmeden testler ve geliştirme kuralları güçlendirildi. O kontrolde yeni uygulama sürümü yayımlanmadı.
+
+## V0.0.6 — optik boyut ve kurulum görselleri
+
+41302883939 çalıştırmasında 34 birim ve 11 gerçek Windows PDF testi geçti; x64 ve ARM64 kurulumları üretildi. Windows x64 üzerinde uygulama EXE'si ve kurulum EXE'sinden çıkarılan ikonlar, kaynak ICO'nun 32 piksel karesiyle piksel düzeyinde eşleşti. Pencerenin küçük/büyük ikonları, kısayol kimliği ve V0.0.5 → V0.0.6 yerinde güncelleme/yeniden açılış testleri başarılıdır.
+
+Yerel varlık kontrolünde ICO'nun 14 boyutunun tamamı çözüldü; şeffaf dış köşeler doğrulandı. Kurulum için 58–232 piksel arasında 15 başlık logosu ve 164:314 oranını koruyan 820×1570 yan panel üretildi; Inno Setup bunları başarıyla derledi. Kurulum ekranları fiziksel farklı DPI monitörlerinde elle incelenmedi. Görev çubuğunun Windows tarafından belirlenen fiziksel alanı değiştirilmedi; simgenin bu alan içindeki belge ve yazı oranı büyütüldü. Mevcut uygulama kimliği, kurulum klasörü ve onaylı otomatik güncelleme akışı korunmuştur.
