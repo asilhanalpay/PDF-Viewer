@@ -4,7 +4,7 @@
 
 ## Başarılı kontroller
 
-- **33 birim testi:** kaynak ve gezinme sınırları, sayfa ölçüleri, yakınlaştırma yönü, güncelleme doğrulaması ve mevcut kurulumun hedeflenmesi.
+- **34 birim testi:** kaynak ve gezinme sınırları, sayfa ölçüleri, yakınlaştırma yönü, güncelleme doğrulaması ve mevcut kurulumun hedeflenmesi.
 - **11 gerçek Windows PDF testi:** 1/100/1000 sayfalık belgelerin ilk ve son sayfaları; portre, yatay ve döndürülmüş sayfalar; bozuk/boş/parola korumalı dosyalar; dosya boyutu ve sayfa dizini sınırları; arka arkaya iptal, yeniden görüntüleme ve oturum kapatma.
 - Sayfa görüntüleri PNG olarak çözüldü; ölçüleri ve boş olmayan açık/koyu piksel içeriği denetlendi. Test belgeleri sentetiktir; tüm gerçek PDF türlerini temsil etmez.
 - **x64 ve ARM64:** WinUI derlemesi ve EXE kurulum paketi üretimi başarılı.
@@ -40,3 +40,9 @@ dotnet test tests/PdfViewer.Windows.Tests -c Release
 ```
 
 Windows PDF testleri Windows'ta çalıştırılmalıdır. Paketleme betiği de bu testleri, uygulama açılış kontrolünü ve bağımlılık taramasını çalıştırır. Kurulumlar henüz kod imzasızdır.
+
+## Güncelleme akışının yeniden kontrolü
+
+[41298253382 doğrulaması](https://github.com/asilhanalpay/PDF-Viewer/actions/runs/41298253382) başarılıdır: 34 birim ve 11 Windows PDF testi geçti. Gerçek V0.0.4, boşluk ve Türkçe karakter içeren, varsayılanın dışında bir klasöre kuruldu. Açılış kontrolünde sürümün kendiliğinden değişmediği görüldü. V0.0.5 kurulumu uygulamanın gerçek `UpdateInstaller.CreateStartInfo` koduyla başlatıldı. Klasör, kaldırma kaydı ve mevcut deneme dosyası korundu; dosya sürümü yenilendi ve uygulama aynı yerden yeniden açıldı.
+
+Otomatik denetimin yalnızca bildirim gösterdiği ve indirme/kurulumun `Update_Click` içindeki kullanıcı onayından sonra başladığı koddan incelendi. Bu koşuda gerçek arayüzde düğmeye basma/onayı reddetme otomasyonu yapılmadı; kurulum protokolü ve sonucu Windows üzerinde test edildi. Uygulama ve kurulum kaynakları V0.0.5 etiketiyle aynıdır; davranış değiştirilmeden testler ve geliştirme kuralları güçlendirildi. Yeni uygulama sürümü yayımlanmadı.
