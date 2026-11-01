@@ -22,3 +22,11 @@ V0.0.1 kullananlar V0.0.2'yi mevcut **Güncelle** düğmesiyle alabilir; otomati
 Kod imzalama sertifikası henüz sağlanmadığı için kurulumlar imzasızdır. Otomatik imzalama ve sertifika sırları ileride eklenmelidir. x64 kurulum ve pencere açılış testi CI'da; ARM64 çalışma testi fiziksel ARM64 cihazda yapılmalıdır. V0.0.1 → V0.0.2 yerinde yükseltmesi Windows CI üzerinde doğrulandı.
 
 Sürüm sırası **V0.0.1 → V0.0.2 → V0.0.3** şeklindedir. Eski `v0.1.0` kurulumu kullanılıyorsa numaralandırma değişimi için V0.0.1 kurulum dosyası bir kez elle çalıştırılmalıdır. Sonraki sürümler uygulama içinden denetlenebilir.
+
+## Korunacak güncelleme davranışı
+
+- Otomatik denetim yalnızca bildirim gösterir. İndirme ve kurulum kullanıcı **Güncelle** onayı verdikten sonra başlar.
+- Kurulum hedefi çalışan uygulamanın `AppContext.BaseDirectory` klasörüdür. Güncelleme sırasında kullanıcıdan yeniden klasör seçmesi istenmez; varsayılan konuma ikinci bir uygulama kurulmaz.
+- `UpdateInstaller.CreateStartInfo` ile aynı kurulum klasörü `/DIR` üzerinden aktarılır. Inno Setup `AppId` ve `UsePreviousAppDir` korunur; kaldırma kaydı değişmez.
+- Doğrulanan dosya mevcut kurulumun üzerine uygulanır. Uygulama kapanır ve aynı yerden yeniden açılır.
+- Windows CI, son uygun kararlı sürümden yükseltmeyi özel, boşluk ve Türkçe karakter içeren bir klasörde test eder. Kurulumu başlatırken uygulamanın gerçek `UpdateInstaller` kodunu kullanır. Klasör, dosya sürümü, kaldırma kaydı ve yeniden açılış kontrolleri geçmeden sürüm yayımlanmaz.
