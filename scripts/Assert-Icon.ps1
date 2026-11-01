@@ -1,4 +1,4 @@
-param([Parameter(Mandatory)][string]$ExePath, [int]$ProcessId = 0)
+param([Parameter(Mandatory)][string]$ExePath, [int]$ProcessId = 0, [string]$ReferenceIconPath = '')
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 if (!('PdfViewer.NativeIconCheck' -as [type])) {
@@ -13,7 +13,7 @@ namespace PdfViewer {
 }
 '@
 }
-$iconPath = Join-Path (Split-Path $ExePath -Parent) 'Assets/PdfViewer.ico'
+$iconPath = if ($ReferenceIconPath) { $ReferenceIconPath } else { Join-Path (Split-Path $ExePath -Parent) 'Assets/PdfViewer.ico' }
 if (!(Test-Path $iconPath)) { throw 'Pencere ikonu kurulumda eksik' }
 $expectedIcon = [System.Drawing.Icon]::new($iconPath, 32, 32)
 $embeddedIcon = [System.Drawing.Icon]::ExtractAssociatedIcon($ExePath)
@@ -39,4 +39,5 @@ if ($ProcessId -ne 0) {
         if ($handle -eq [IntPtr]::Zero) { throw 'Pencere/görev çubuğu için ikon atanmamış' }
     }
 }
-Write-Output 'EXE ikonu görselle eşleşiyor; pencere/görev çubuğu ikonları atanmış.'
+Write-Output "EXE ikonu kaynak görselle eşleşiyor: $ExePath"
+if ($ProcessId -ne 0) { Write-Output 'Pencere/görev çubuğu ikonları atanmış.' }

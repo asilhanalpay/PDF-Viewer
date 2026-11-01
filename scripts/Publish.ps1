@@ -31,3 +31,7 @@ $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
 if (!(Test-Path $iscc)) { throw 'Inno Setup 6 bulunamadı' }
 & $iscc "/DAppVersion=$version" "/DAppArch=$arch" "$root/installer/PdfViewer.iss"
 if ($LASTEXITCODE -ne 0) { throw 'Kurulum paketi oluşturulamadı' }
+
+if ($Runtime -eq 'win-x64') {
+    & "$root/scripts/Assert-Icon.ps1" -ExePath "$root/artifacts/PDF-Viewer-Setup-$arch.exe" -ReferenceIconPath "$root/src/PdfViewer/Assets/PdfViewer.ico"
+}

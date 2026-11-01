@@ -1,6 +1,6 @@
 Windows 10 ve Windows 11 için sade PDF görüntüleyici.
 
-V0.0.5: Yeni uygulama ikonu; görev çubuğu, pencere, EXE, kurulum ve Başlat menüsünde aynı simge.
+V0.0.6: Mevcut ikon daha büyük belge ve PDF yazısıyla iyileştirildi. Görev çubuğunda küçük boyutlara özel çizim, kurulumda yüksek DPI logo görselleri kullanılır. Mevcut klasöre otomatik güncelleme davranışı korunur.
 
 ### İndir
 

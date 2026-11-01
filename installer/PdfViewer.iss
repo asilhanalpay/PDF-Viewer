@@ -1,5 +1,5 @@
 #ifndef AppVersion
-  #define AppVersion "0.0.5"
+  #define AppVersion "0.0.6"
 #endif
 #ifndef AppArch
   #define AppArch "x64"
@@ -19,6 +19,9 @@ OutputBaseFilename=PDF-Viewer-Setup-{#AppArch}
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
+WizardImageFile=assets\BrandPanel.png
+WizardSmallImageFile=assets\Header58.png,assets\Header71.png,assets\Header77.png,assets\Header85.png,assets\Header97.png,assets\Header103.png,assets\Header112.png,assets\Header116.png,assets\Header124.png,assets\Header129.png,assets\Header143.png,assets\Header147.png,assets\Header159.png,assets\Header194.png,assets\Header232.png
+WizardImageStretch=yes
 SetupIconFile=..\src\PdfViewer\Assets\PdfViewer.ico
 UninstallDisplayIcon={app}\PdfViewer.exe
 CloseApplications=yes
